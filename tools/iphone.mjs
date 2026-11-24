@@ -29,7 +29,7 @@ async function browser(port, dev) {
     if (r.result?.exceptionDetails) throw new Error('eval: ' + JSON.stringify(r.result.exceptionDetails).slice(0, 300)); return r.result?.result?.value; };
   const touch = (type, pts) => send('Input.dispatchTouchEvent', { type, touchPoints: pts.map(([x, y]) => ({ x, y })) });
   return { errors, ev, send,
-    go: async (path) => { await send('Page.navigate', { url: 'about:blank' }); await sleep(150); await send('Page.navigate', { url: ROOT + path }); await sleep(1800); await send('Page.resetNavigationHistory'); },
+    go: async (path) => { await send('Page.navigate', { url: 'about:blank' }); await sleep(150); await send('Page.navigate', { url: ROOT + path }); await sleep(300); await send('Emulation.setSafeAreaInsetsOverride', { insets: { top: dev.sat, bottom: dev.sab, left: 0, right: 0 } }); await sleep(1500); await send('Page.resetNavigationHistory'); },
     tap: async (sel) => { const r = await ev(`(()=>{const e=document.querySelector(${JSON.stringify(sel)});if(!e)return null;e.scrollIntoView({block:'center'});const b=e.getBoundingClientRect();return [b.x+b.width/2,b.y+b.height/2]})()`);
       if (!r) throw new Error('tap: no ' + sel); await sleep(120); await touch('touchStart', [r]); await sleep(60); await touch('touchEnd', []); await sleep(450); },
     swipe: async (x0, y0, x1, y1, steps = 8, ms = 220) => { await touch('touchStart', [[x0, y0]]); for (let i = 1; i <= steps; i++) { await touch('touchMove', [[x0 + (x1 - x0) * i / steps, y0 + (y1 - y0) * i / steps]]); await sleep(ms / steps); } await touch('touchEnd', []); await sleep(600); },
@@ -53,7 +53,7 @@ const devices = [
   { key: 'se', w: 375, h: 667, dsf: 2, sat: 20, sab: 0, standalone: true, label: 'iPhone SE · home-screen app' },
 ];
 let port = 9371;
-for (const dev of devices) {
+for (const dev of devices.filter(d => !process.env.DEV || d.key === process.env.DEV)) {
   console.log('\n=== ' + dev.label);
   const b = await browser(port++, dev), P = dev.key;
   await b.go('index.html?nosw#view=calendar&week=w1&date=2026-11-30');
@@ -134,7 +134,7 @@ for (const dev of devices) {
   await b.tap('#tab-grocery'); await sleep(300);
   const box = await b.ev(`(()=>{const r=document.querySelector('.panel .box').getBoundingClientRect(),c=document.querySelector('.panel .chk').getBoundingClientRect();return [r.width,c.height]})()`);
   ok(`${P}: big grocery checkboxes`, box[0] >= 28 && box[1] >= 48, box);
-  await b.ev(`(()=>{const h=[...document.querySelectorAll('.store-h')][1];scrollTo(0,h.getBoundingClientRect().top+scrollY+140)})()`); await sleep(400);
+  await b.ev(`(()=>{const h=[...document.querySelectorAll('.store-h')].sort((a,b)=>b.parentElement.offsetHeight-a.parentElement.offsetHeight)[0];scrollTo(0,h.getBoundingClientRect().top+scrollY+120)})()`); await sleep(400);
   const st = await b.ev(`(()=>{const hs=[...document.querySelectorAll('.store-h')];const stuck=hs.find(h=>{const r=h.getBoundingClientRect();return Math.abs(r.top-${dev.sat})<2});return stuck?stuck.textContent.slice(0,30):null})()`);
   ok(`${P}: grocery section header sticks under the status bar`, !!st, st);
   await b.shot(`${P}-meals-grocery`);
