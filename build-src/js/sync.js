@@ -140,11 +140,14 @@
       await flush();
       subscribe();
     }
+    let libTries = 0;
     async function init() {
       if (!configured) { setStatus({ mode: 'local' }); return; }
       setStatus({ mode: 'loading' });
       let mod;
-      try { mod = await import(CFG.SUPABASE_JS); } catch (e) { setStatus({ mode: 'offline', message: 'Could not load the sync library (offline?)' }); setTimeout(init, 30000); return; }
+      try { mod = await import(CFG.SUPABASE_JS); libTries = 0; } catch (e) {
+        libTries++; setStatus({ mode: navigator.onLine ? 'error' : 'offline', message: 'Could not load the sync library. Retrying…' });
+        setTimeout(init, Math.min(30000, 2000 * 2 ** (libTries - 1))); return; }
       sb = mod.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY, {
         auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'implicit', storageKey: 'sched-auth' },
         realtime: { params: { eventsPerSecond: 10 } },
