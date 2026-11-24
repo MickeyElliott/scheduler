@@ -39,6 +39,7 @@ out = os.path.join(HERE, "..")          # site root (GitHub Pages serves this)
 planout = os.path.join(out, "plan")     # markdown + raw JSON
 os.makedirs(planout, exist_ok=True)
 SYNC_JS = open(os.path.join(HERE, "js", "sync.js")).read()
+STUDY_JS = open(os.path.join(HERE, "js", "study.js")).read()
 def inline_js(src):
     return src.replace("</", "<\\/")
 
@@ -68,7 +69,7 @@ MEALS = {
 PLAN["ref"]["meals_page"] = MEALS
 tpl = open(os.path.join(HERE, "template.html")).read()
 data = json.dumps(PLAN, ensure_ascii=False).replace("</", "<\\/")
-open(os.path.join(out, "index.html"), "w").write(tpl.replace("/*__SYNC__*/", inline_js(SYNC_JS)).replace("/*__DATA__*/", data))
+open(os.path.join(out, "index.html"), "w").write(tpl.replace("/*__SYNC__*/", inline_js(SYNC_JS)).replace("/*__STUDY__*/", inline_js(STUDY_JS)).replace("/*__DATA__*/", data))
 json.dump(PLAN, open(os.path.join(planout, "plan-data.json"), "w"), ensure_ascii=False, indent=1)
 mtpl = open(os.path.join(HERE, "meals_template.html")).read()
 open(os.path.join(out, "meals.html"), "w").write(mtpl.replace("/*__SYNC__*/", inline_js(SYNC_JS)).replace("/*__MEALS__*/", json.dumps(MEALS, ensure_ascii=False).replace("</", "<\\/")))

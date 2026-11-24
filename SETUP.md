@@ -11,6 +11,13 @@
 - The allowlist has one login, the shared email that Mickey and his wife both use.
 - `config.js` has the project URL and the **publishable** key. That key is meant to be public; never put a `service_role` or secret key in this repo.
 
+## Study materials
+
+- They are stored in the `study_content` table, with one row each for meta, policy, cards, cases, scenarios, oral, schedule and flags.
+- Signed-in allowlisted users can read them. The public key and other logins can't, and nobody can write through the API.
+- To load or update them, run `python3 tools/seed-study.py /path/to/study-data.json > seed.sql` on a machine that has the private JSON, then run `seed.sql` in the Supabase SQL editor. Devices pick up the new version on their next sign-in check, about hourly.
+- Never commit the JSON, the seed SQL, or screenshots of the Study tab while signed in.
+
 ## You need to do this once (Supabase dashboard)
 
 1. **Auth → URL Configuration**

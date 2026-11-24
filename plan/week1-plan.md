@@ -972,8 +972,9 @@ https://app.leg.wa.gov/RCW/default.aspx?cite=10.120&full=true
 
 **Self-quiz:** Recite the statutory definition of 'necessary' and the deadly-force trigger.
 
-### Tue 12/1: FWPD Manual of Standards Ch. 4: Use of Force (rev. 03-10-2025), §§4.1.1-4.1.6
+### Tue 12/1: FWPD Manual of Standards Ch. 4: Use of Force (current rev. 05-18-2026), §§4.1.1-4.1.6
 https://agportal-s3bucket.s3.amazonaws.com/useofforcepolicy/UseOfForcePolicy71.pdf
+- Current version is rev. 05-18-2026 (your department copy). The public link here is the older rev. 03-10-2025 posted on the AG portal; when the two differ, the 05-18-2026 text controls. Section-by-section outlines of the current revision are in the Study tab (sign in)
 - 4.1.1 adopts RCW 10.120.020 verbatim as FWPD policy. Note footnotes 1-2: 'possible' read as 'feasible', and 'least amount' starts above the subject's resistance
 - Verbal persuasion: one officer talking satisfies the de-escalation/verbalization principle for all officers on scene
 - 4.1.2 definitions (AGMUFP, chokehold, CEW, deadly force, deadly weapon, de-escalation vs. de-escalation tactics)
@@ -989,7 +990,7 @@ https://agportal-s3bucket.s3.amazonaws.com/uploadedfiles/Another/UOF%20Model%20P
 - De-escalation duty and listed tactics · Reasonable Care · 'Identification, Warning, and Opportunity to Comply Prior to the Use of Physical Force'
 - Action in Response to Wrongdoing (duty to intervene) · First Aid · Types of Force · Select force tools (OC, impact, PIW/40mm, ECW, firearms) · restraint devices
 - RCW 9A.16.040: criminal justification for deadly force with an objective 'good faith' standard (similarly situated reasonable officer). Contrast it with the civil RCW 10.120 standard
-- AG portal lists FWPD's policy as 'consistent with the AGO model policy', last updated 3/10/2025
+- AG portal lists FWPD's policy as 'consistent with the AGO model policy' (the portal copy is rev. 3/10/2025; FWPD's current Ch. 4 is rev. 05-18-2026)
 
 **Self-quiz:** Walk through the AG's critical-decision-making steps for a barricaded-subject call.
 
@@ -1014,7 +1015,7 @@ https://app.leg.wa.gov/RCW/default.aspx?cite=10.31.040
 
 ### Sat 12/5: FWPD reporting, qualification & SWAT-specific standards
 https://www.federalwaywa.gov/sites/default/files/Documents/Department/PD/Federal%20Way%20PD%20Manual%20Of%20Standards.pdf
-- FWPD Ch. 4 §4.2 (reporting uses of force, administrative review, administrative leave) and §4.3 (authorized weapons, proficiency, training & qualification, range)
+- FWPD Ch. 4 (rev. 05-18-2026) §4.2 (reporting uses of force, administrative review, administrative leave) and §4.3 (authorized weapons, proficiency, training & qualification, range)
 - Public FWPD Manual of Standards PDF (dated June 2020; sections revised through 2016-2018): 46.2.2 SWAT Selection (refers to 16.2.2; physical assessment, shooting qual, Chief's review of the pre-employment psych), 33.6.2 SWAT training (readiness exercises at least twice a year), 46.2.9 Tactical Operations Outside Our Jurisdiction (notify the agency with primary jurisdiction for preplanned ops)
 - Several practice sections in the public copy are BLANK/redacted (e.g. 46.2.1 Special Operations). Pull the current versions from PowerDMS
 

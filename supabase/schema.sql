@@ -21,7 +21,7 @@ create table if not exists public.household_members (
 -- scope: check | log | settings | edit | mcheck | medit
 create table if not exists public.records (
   household_id uuid not null references public.households(id) on delete cascade,
-  scope        text not null check (scope in ('check','log','settings','edit','mcheck','medit')),
+  scope        text not null check (scope in ('check','log','settings','edit','mcheck','medit','study')),
   key          text not null check (length(key) between 1 and 300),
   value        jsonb,
   deleted      boolean not null default false,
@@ -114,6 +114,36 @@ do $$ begin
     alter publication supabase_realtime add table public.records;
   end if;
 end $$;
+
+-- 8. Study module ------------------------------------------------------------
+-- Study materials (department policy outlines, flashcards, scenarios, ...) live
+-- ONLY in this table, never in the public repo. Allowlisted users can read them;
+-- nobody can write through the API (rows are loaded by the project owner).
+alter table public.records drop constraint if exists records_scope_check;
+alter table public.records add constraint records_scope_check
+  check (scope in ('check','log','settings','edit','mcheck','medit','study'));
+
+create table if not exists public.study_content (
+  key        text primary key check (char_length(key) between 1 and 64),
+  data       jsonb not null,
+  version    text not null,
+  updated_at timestamptz not null default now()
+);
+alter table public.study_content enable row level security;
+
+create or replace function private.is_allowlisted()
+returns boolean language sql stable security definer set search_path = '' as $$
+  select exists (select 1 from public.household_members m
+                 where m.email = lower(coalesce(auth.jwt() ->> 'email', '')));
+$$;
+revoke all on function private.is_allowlisted() from public, anon;
+grant execute on function private.is_allowlisted() to authenticated;
+
+revoke all on public.study_content from anon, authenticated;
+grant select on public.study_content to authenticated;
+drop policy if exists study_content_select on public.study_content;
+create policy study_content_select on public.study_content
+  for select to authenticated using ((select private.is_allowlisted()));
 
 -- 7. ALLOWLIST --------------------------------------------------------------
 -- >>> EDIT HERE: every email that may sign in and read/write the data. <<<
