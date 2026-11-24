@@ -182,6 +182,11 @@
         const { error } = await sb.auth.signInWithOtp({ email: email.trim().toLowerCase(), options: { emailRedirectTo: location.origin + location.pathname, shouldCreateUser: true } });
         if (error) throw error;
       },
+      async verifyCode(email, code) {   /* 6-digit code from the same email: needed in the installed iPhone app */
+        if (!sb) throw new Error('Sync is not configured');
+        const { error } = await sb.auth.verifyOtp({ email: email.trim().toLowerCase(), token: String(code).replace(/\D/g, ''), type: 'email' });
+        if (error) throw error;
+      },
       async signOut() { if (sb) await sb.auth.signOut(); },
       async syncNow() { if (sb && hid) { await pull(true); await flush(); } },
       db: () => (sb && hid ? sb : null),   /* signed-in + allowlisted client, else null */
@@ -208,18 +213,21 @@
 .sync.is-open .sync__pop{opacity:1;transform:none;pointer-events:auto}
 .sync__pop h4{margin:0 0 6px;font-size:14px}
 .sync__pop p{margin:0 0 10px;color:var(--text-2,#aab);font-size:13px}
-.sync__pop input{width:100%;padding:9px 11px;border-radius:10px;border:1px solid var(--border-2,rgba(255,255,255,.12));background:var(--bg,#111);color:inherit;font:inherit;margin-bottom:8px}
-.sync__pop button{font:600 13px/1 var(--font,system-ui);padding:9px 12px;border-radius:10px;border:1px solid var(--border-2,rgba(255,255,255,.12));background:var(--surface-3,#2a303b);color:inherit;cursor:pointer}
+.sync__pop input{width:100%;min-height:44px;font-size:16px!important;padding:9px 11px;border-radius:10px;border:1px solid var(--border-2,rgba(255,255,255,.12));background:var(--bg,#111);color:inherit;font:inherit;margin-bottom:8px}
+.sync__pop button{font:600 14px/1 var(--font,system-ui);min-height:44px;padding:9px 14px;border-radius:10px;border:1px solid var(--border-2,rgba(255,255,255,.12));background:var(--surface-3,#2a303b);color:inherit;cursor:pointer}
 .sync__pop button.primary{background:var(--accent,#7fd8a4);color:#111;border-color:transparent}
 .sync__row{display:flex;gap:8px;flex-wrap:wrap}
 .sync__n{min-width:18px;padding:2px 5px;border-radius:99px;background:#fbbf24;color:#111;font-size:10.5px;text-align:center;display:none}
-.sync__msg{font-size:12.5px;margin-top:8px;color:var(--text-2,#aab)}`;
+.sync__msg{font-size:12.5px;margin-top:8px;color:var(--text-2,#aab)}@media (max-width:640px){.sync__pop{position:fixed;left:12px;right:12px;width:auto;top:calc(var(--sat,env(safe-area-inset-top,0px)) + 64px)}.sync__pill{min-height:44px;min-width:44px;justify-content:center}}
+`;
   const LABEL = { local: 'Local only', loading: 'Connecting…', signedout: 'Sign in to sync', syncing: 'Syncing…', synced: 'Synced', offline: 'Offline', error: 'Sync error', denied: 'No access' };
   function mountIndicator(host, sync) {
     if (!document.getElementById('sync-css')) { const s = document.createElement('style'); s.id = 'sync-css'; s.textContent = CSS; document.head.appendChild(s); }
     host.innerHTML = `<div class="sync" data-mode="local"><button class="sync__pill" type="button" aria-haspopup="dialog" aria-expanded="false"><span class="sync__dot"></span><span class="sync__label">Local only</span><span class="sync__n" hidden></span></button><div class="sync__pop" role="dialog" aria-label="Sync"></div></div>`;
     const root = host.firstElementChild, pill = root.querySelector('.sync__pill'), lab = root.querySelector('.sync__label'), badge = root.querySelector('.sync__n'), pop = root.querySelector('.sync__pop');
-    let sentTo = null;
+    const SENT = 'sched.sentTo';
+    let sentTo = null; try { const v = JSON.parse(localStorage.getItem(SENT) || 'null'); if (v && Date.now() - v.t < 36e5) sentTo = v.e; } catch (e) { }
+    const setSent = e => { sentTo = e; try { e ? localStorage.setItem(SENT, JSON.stringify({ e, t: Date.now() })) : localStorage.removeItem(SENT); } catch (x) { } };
     const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
     function draw(st) {
       root.dataset.mode = st.mode;
@@ -228,20 +236,23 @@
       pill.title = lab.textContent;
       let h;
       if (st.mode === 'local') h = `<h4>Local only</h4><p>Saved in this browser. Add the Supabase URL and key to <code>config.js</code> to sync between devices.</p>`;
-      else if (st.mode === 'signedout') h = sentTo ? `<h4>Check your email</h4><p>We sent a sign-in link to <b>${esc(sentTo)}</b>. Open it on this device.</p><div class="sync__row"><button type="button" data-act="again">Use a different email</button></div>`
+      else if (st.mode === 'signedout') h = sentTo ? `<h4>Check your email</h4><p>We sent a sign-in email to <b>${esc(sentTo)}</b>. Tap the link on this device${standalone ? ', or, since this is the home-screen app, type the code from the email here' : ', or type the code from the email'}.</p><form data-act="code"><input name="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9 ]{6,12}" maxlength="12" placeholder="6-digit code" aria-label="Code from the email" required><div class="sync__row"><button class="primary" type="submit">Sign in with code</button><button type="button" data-act="again">Start over</button></div></form>`
         : `<h4>Sign in to sync</h4><p>Get a one-tap sign-in link by email. Your changes stay saved here meanwhile${st.pending ? ` (${st.pending} waiting to upload)` : ''}.</p><form data-act="send"><input type="email" required placeholder="you@example.com" autocomplete="email" aria-label="Email"><div class="sync__row"><button class="primary" type="submit">Email me a link</button></div></form>`;
       else h = `<h4>${esc(LABEL[st.mode] || st.mode)}</h4><p>${st.email ? `Signed in as <b>${esc(st.email)}</b>. ` : ''}${st.mode === 'offline' ? `No connection. ${st.pending} change(s) saved here and will upload when you're back online.` : st.mode === 'synced' ? 'Everything is up to date across devices.' : st.mode === 'denied' ? 'This email is not on the allowlist.' : esc(st.message || '')}</p><div class="sync__row"><button type="button" data-act="now">Sync now</button><button type="button" data-act="out">Sign out</button></div>`;
       pop.innerHTML = h + '<div class="sync__msg" aria-live="polite"></div>';
     }
-    sync.onStatus(draw);
+    const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+    sync.onStatus(st => { if (sentTo && /^(synced|syncing|denied)$/.test(st.mode)) setSent(null); draw(st); });
     const msg = t => { const m = pop.querySelector('.sync__msg'); if (m) m.textContent = t; };
     pill.addEventListener('click', e => { e.stopPropagation(); const o = root.classList.toggle('is-open'); pill.setAttribute('aria-expanded', o); if (o) { const i = pop.querySelector('input'); if (i) setTimeout(() => i.focus(), 50); } });
     document.addEventListener('click', e => { if (!root.contains(e.target)) { root.classList.remove('is-open'); pill.setAttribute('aria-expanded', 'false'); } });
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && root.classList.contains('is-open')) { root.classList.remove('is-open'); pill.focus(); } });
-    pop.addEventListener('submit', async e => { e.preventDefault(); const em = pop.querySelector('input').value; msg('Sending…');
-      try { await sync.signIn(em); sentTo = em; draw(sync.status()); } catch (err) { msg(err.message || 'Could not send the link'); } });
+    pop.addEventListener('submit', async e => { e.preventDefault(); const f = e.target, inp = f.querySelector('input'), btn = f.querySelector('button[type=submit]'); if (btn) btn.disabled = true;
+      if (f.dataset.act === 'code') { msg('Checking…'); try { await sync.verifyCode(sentTo, inp.value); setSent(null); msg('Signed in'); } catch (err) { msg(err.message || 'That code did not work'); if (btn) btn.disabled = false; } return; }
+      msg('Sending…');
+      try { await sync.signIn(inp.value); setSent(inp.value.trim().toLowerCase()); draw(sync.status()); const c = pop.querySelector('input[name=code]'); if (c) setTimeout(() => c.focus(), 50); } catch (err) { msg(err.message || 'Could not send the email'); if (btn) btn.disabled = false; } });
     pop.addEventListener('click', async e => { const a = e.target.closest('[data-act]'); if (!a || a.tagName === 'FORM') return;
-      if (a.dataset.act === 'again') { sentTo = null; draw(sync.status()); }
+      if (a.dataset.act === 'again') { setSent(null); draw(sync.status()); }
       if (a.dataset.act === 'now') { msg('Syncing…'); await sync.syncNow(); msg('Done'); }
       if (a.dataset.act === 'out') { await sync.signOut(); } });
     return root;

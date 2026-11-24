@@ -4,7 +4,14 @@
 <meta charset="utf-8">
 <script src="config.js"></script>
 <script>/*__SYNC__*/</script>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Crect width=%2216%22 height=%2216%22 rx=%224%22 fill=%22%23c8f560%22/%3E%3C/svg%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/meals-32.png">
+<link rel="apple-touch-icon" href="icons/meals-180.png">
+<link rel="manifest" href="meals.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Meals">
+<meta name="format-detection" content="telephone=no">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#14161a">
 <title>Mickey's Meal Plan · Week of Nov 30</title>
@@ -120,6 +127,39 @@ details.acc[open]>summary::after{transform:rotate(225deg)}
 .toast.is-on{opacity:1;transform:translate(-50%,0)}
 body.is-editing .card{border-color:rgba(127,216,164,.22)}
 @media (max-width:520px){.meal{grid-template-columns:1fr auto}.meal__time{grid-column:1/-1}.mform__grid{grid-template-columns:1fr}.topbar .sync__label{display:none}.topbar .sync__n{display:inline-block}.topbar .sync__n[hidden]{display:none}}
+
+/* ---- iPhone / touch ---- */
+:root{--sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px);--sal:env(safe-area-inset-left,0px);--sar:env(safe-area-inset-right,0px);--tb-h:60px}
+html{background:var(--bg);overscroll-behavior-y:none} body{overscroll-behavior-y:none;-webkit-tap-highlight-color:transparent}
+body::before{content:"";position:fixed;top:0;left:0;right:0;height:var(--sat);z-index:30;background:rgba(20,22,26,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);pointer-events:none}
+header.top{padding-top:calc(32px + var(--sat))}
+.wrap{padding-left:max(20px,var(--sal));padding-right:max(20px,var(--sar))}
+.tab__ic,.tab__s{display:none}
+.store-h{position:sticky;top:62px;z-index:5;background:var(--surface);margin:-6px -8px 6px;padding:10px 8px;border-radius:10px}
+.card:has(.store-h){overflow:visible}
+@media (pointer:coarse){
+  .chk{padding:12px 8px;min-height:52px;align-items:center}
+  .box{width:30px;height:30px;border-radius:9px;margin-top:0} .box svg{width:17px;height:17px}
+  .ib{width:44px;height:44px} .editbtn{min-height:40px;padding:9px 15px}
+  .btn{min-height:44px}
+  input,select,textarea,.in{font-size:16px!important}
+  .chk:hover,.btn:hover,.ib:hover{background:none}
+}
+@media (max-width:640px){
+  header.top{padding-top:calc(16px + var(--sat))}
+  main{padding-bottom:calc(var(--tb-h) + var(--sab) + 32px)}
+  nav.tabsbar{position:fixed;top:auto;bottom:0;left:0;right:0;margin:0;z-index:40;border-bottom:0;border-top:1px solid var(--border);background:rgba(20,22,26,.92);backdrop-filter:saturate(150%) blur(18px);-webkit-backdrop-filter:saturate(150%) blur(18px);padding-bottom:var(--sab)}
+  nav.tabsbar .wrap{padding:0 var(--sar) 0 var(--sal)}
+  .tabs{gap:0;padding:0;overflow:visible;-webkit-mask-image:none!important;mask-image:none!important}
+  .tabs__ind{display:none}
+  .tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;height:var(--tb-h);padding:0 2px;border-radius:0;font-size:10.5px;color:var(--text-3)}
+  .tab[aria-selected="true"]{color:var(--green)}
+  .tab__ic{display:block;width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s var(--ease)} .tab:active .tab__ic{transform:scale(.88)}
+  .tab__l{display:none} .tab__s{display:block}
+  .store-h{top:var(--sat)}
+  .toast{bottom:calc(var(--tb-h) + var(--sab) + 12px)}
+  .sync__pop{top:calc(var(--sat) + 64px)!important}
+}
 </style>
 </head>
 <body>
@@ -159,6 +199,8 @@ let uid=0;
 const chk=(id,html,extra='')=>{const u='k'+(uid++);return `<li class="li-row"><label class="chk" for="${u}"><input type="checkbox" id="${u}" data-k="${esc(id)}" ${C[id]?'checked':''}><span class="box">${SVG}</span><span class="chk__t">${html}</span></label>${extra}</li>`};
 const pad=n=>String(n).padStart(2,'0');const now=new Date();const today=now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate());
 const TABS=[['week','This week'],['pack','Pack for work'],['prep','Sunday prep'],['grocery','Groceries'],['recipes','Recipes']];
+const TAB_S={week:'Week',pack:'Pack',prep:'Prep',grocery:'Groceries',recipes:'Recipes'};
+const TAB_IC={week:'<path d="M4 6h16v14H4zM4 10h16M8 3v5M16 3v5"/>',pack:'<path d="M4 8h16v11H4zM9 8V5h6v3M4 13h16"/>',prep:'<path d="M5 11h14v3a6 6 0 0 1-6 6h-2a6 6 0 0 1-6-6zM3 11h18M9 7c0-1.5 1-2 1-3.5M14 7c0-1.5 1-2 1-3.5"/>',grocery:'<path d="M3 4h2l2.4 11h10.2L20 7H6.2M9 20h.01M17 20h.01"/>',recipes:'<path d="M6 3h11a1 1 0 0 1 1 1v17l-3-2-3 2-3-2-3 2V4a1 1 0 0 1 1-1zM9 8h6M9 12h6"/>'};
 const typeBadge=t=>t==='shift'?'<span class="badge work">Works tonight</span>':t==='postshift'?'<span class="badge">Sleeps in after work</span>':'<span class="badge home">Home day</span>';
 const newId=()=>SchedSync.newId();
 const mins=t=>{const m=String(t||'').trim().toLowerCase().match(/^(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/);if(!m)return 9999;let h=+m[1]%12;if(m[3]==='pm')h+=12;if(!m[3]&&+m[1]===12)h=12;return h*60+(+m[2]||0)};
@@ -206,7 +248,7 @@ const RENDER={week:weekPanel,pack:packPanel,prep:prepPanel,grocery:groceryPanel,
 
 /* ---- tabs, scroll memory ---- */
 function render(){const t=RENDER[S.tab]?S.tab:'week';
-  $('#tabs').innerHTML=TABS.map(([k,l])=>`<button class="tab" role="tab" id="tab-${k}" aria-controls="panel" aria-selected="${k===t}" tabindex="${k===t?0:-1}" data-k="${k}">${l}</button>`).join('')+'<span class="tabs__ind" aria-hidden="true"></span>';
+  $('#tabs').innerHTML=TABS.map(([k,l])=>`<button class="tab" role="tab" id="tab-${k}" aria-controls="panel" aria-selected="${k===t}" tabindex="${k===t?0:-1}" data-k="${k}"><svg class="tab__ic" viewBox="0 0 24 24" aria-hidden="true">${TAB_IC[k]}</svg><span class="tab__l">${l}</span><span class="tab__s" aria-hidden="true">${TAB_S[k]}</span></button>`).join('')+'<span class="tabs__ind" aria-hidden="true"></span>';
   show(t,true);restoreScroll()}
 function place(instant){const tl=$('#tabs');tl.classList.toggle('is-scrollable',tl.scrollWidth>tl.clientWidth+2);const s=$('#tabs [aria-selected="true"]'),ind=$('#tabs .tabs__ind');if(!s)return;if(instant)ind.style.transition='none';ind.style.width=s.offsetWidth+'px';ind.style.transform=`translateX(${s.offsetLeft}px)`;if(instant){ind.offsetWidth;ind.style.transition=''}}
 function show(t,instant,quiet){S.tab=t;save();$$('#tabs .tab').forEach(b=>{const on=b.dataset.k===t;b.setAttribute('aria-selected',on);b.tabIndex=on?0:-1});place(instant);
@@ -254,6 +296,7 @@ document.body.classList.toggle('is-editing',S.edit);$('#editBtn').setAttribute('
 render();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>place(true));
 SchedSync.mountIndicator($('#syncHost'),SYNC);SYNC.init();
 })();
+if('serviceWorker' in navigator&&!/[?&]nosw\b/.test(location.search)&&(location.protocol==='https:'||location.hostname==='127.0.0.1'||location.hostname==='localhost'))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 </script>
 </body>
 </html>

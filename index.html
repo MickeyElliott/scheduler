@@ -2,7 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Crect width=%2216%22 height=%2216%22 rx=%224%22 fill=%22%23c8f560%22/%3E%3C/svg%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/app-32.png">
+<link rel="apple-touch-icon" href="icons/app-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SWAT Prep">
+<meta name="format-detection" content="telephone=no">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b0e13">
 <title>Valley SWAT Prep · M. Elliott</title>
@@ -331,7 +338,7 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.5}
 .sx-done{text-align:center;padding:var(--s5) 0;animation:sxIn .4s var(--ease)}.sx-done__big{font-size:56px;font-weight:700;font-family:var(--mono)}.sx-done__big span{font-size:24px;color:var(--text-3)}
 .sx-browse{display:grid;gap:var(--s3)}.sx-bc{padding:var(--s3);border-radius:var(--r);background:var(--surface-2)}.sx-bc__q{font-weight:600}
 /* quick 5 overlay: big tap targets for the car */
-.sx-q5{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;background:var(--bg);opacity:0;transform:translateY(16px);transition:opacity .25s,transform .3s var(--ease);padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+.sx-q5{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;background:var(--bg);opacity:0;transform:translateY(16px);transition:opacity .25s,transform .3s var(--ease);padding:var(--sat) 0 var(--sab);height:100vh;height:100dvh}
 .sx-q5.is-open{opacity:1;transform:none}
 .sx-q5__bar{display:flex;align-items:center;justify-content:space-between;padding:var(--s4) var(--s5);font-size:var(--fs-md);color:#fde68a}
 .sx-q5__x{width:52px;height:52px;justify-content:center;font-size:20px}
@@ -393,6 +400,95 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.5}
   .drawer{width:100vw;top:auto;height:88vh;border-radius:20px 20px 0 0;border-left:0;border-top:1px solid var(--border-2);transform:translateY(102%)}
   .milestone{grid-template-columns:1fr;gap:2px}
 }
+
+/* ==== 17. iPhone / touch ==== */
+:root{--sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px);--sal:env(safe-area-inset-left,0px);--sar:env(safe-area-inset-right,0px);--tabbar-h:58px}
+html{background:var(--bg);overscroll-behavior-y:none;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{overscroll-behavior-y:none;-webkit-tap-highlight-color:transparent}
+.app-header{padding-top:var(--sat)}
+.app-header__inner{padding-left:max(var(--s4),var(--sal));padding-right:max(var(--s4),var(--sar))}
+.tabbar{display:none}
+.drawer__grab{display:none}
+.seg{display:inline-flex;padding:3px;border-radius:12px;background:var(--surface);border:1px solid var(--border)}
+.seg__b{font:600 var(--fs-sm)/1 var(--font);color:var(--text-2);background:none;border:0;border-radius:9px;padding:8px 12px;cursor:pointer;transition:background var(--dur),color var(--dur)}
+.seg__b[aria-pressed="true"]{background:var(--surface-3);color:var(--text)}
+.more-list{display:grid;gap:var(--s2)}
+.more-item{display:flex;flex-direction:column;gap:2px;text-align:left;padding:14px 16px;min-height:56px;border-radius:14px;border:1px solid var(--border);background:var(--surface);color:var(--text);font:inherit;text-decoration:none;cursor:pointer}
+.more-item span{font-size:var(--fs-sm);color:var(--text-3)} .more-item.is-on{border-color:var(--accent)}
+.drawer[data-mode="more"]{height:auto;max-height:88dvh} .drawer[data-mode="more"] .drawer__inner{height:auto}
+/* agenda */
+.ag-head h1{margin:0}
+.ag-strip{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:var(--s4) 0 var(--s3)}
+.ag-day{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 0 9px;min-height:64px;border-radius:14px;border:1px solid var(--border);background:var(--surface);color:var(--text-2);font:inherit;cursor:pointer;transition:background var(--dur),border-color var(--dur),color var(--dur)}
+.ag-day__dow{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-3)} .ag-day__n{font:700 17px/1 var(--font);color:var(--text)}
+.ag-day__p{width:60%;height:3px;border-radius:2px;background:linear-gradient(90deg,var(--ok) calc(var(--p)*1%),rgba(255,255,255,.1) 0)}
+.ag-day.is-today .ag-day__dow{color:var(--accent)} .ag-day.is-on{background:var(--accent);border-color:var(--accent)} .ag-day.is-on *{color:var(--accent-ink)} .ag-day.is-on .ag-day__p{background:linear-gradient(90deg,var(--accent-ink) calc(var(--p)*1%),rgba(0,0,0,.18) 0)}
+.ag-sub{display:flex;justify-content:space-between;align-items:baseline;gap:var(--s3);margin-bottom:var(--s3)}
+.ag-list{display:flex;flex-direction:column;gap:8px}
+.ag-item{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px 14px;min-height:60px;border-radius:14px;border:1px solid var(--border);border-left:4px solid var(--c,var(--border-3));background:var(--surface);color:var(--text);font:inherit;cursor:pointer;animation:sxIn .3s var(--ease) both;animation-delay:calc(var(--i)*25ms);transition:transform .12s,background var(--dur)}
+.ag-item:active{transform:scale(.985);background:var(--surface-2)}
+.ag-item.is-done{opacity:.62} .ag-item.is-done .ag-title{text-decoration:line-through;text-decoration-color:var(--text-3)} .ag-item.is-skipped{opacity:.45} .ag-item.is-flex{border-style:dashed;border-left-style:solid}
+.ag-item--shift{cursor:default;background:repeating-linear-gradient(135deg,rgba(255,255,255,.025) 0 8px,transparent 8px 16px);border-left-color:var(--text-3)}
+.ag-time{flex:none;width:46px;font:600 13px/1.25 var(--mono);color:var(--text-2)} .ag-time small{display:block;font-weight:400;color:var(--text-3)}
+.ag-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.ag-title{font-weight:600;line-height:1.3;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.ag-meta{font-size:12px;color:var(--text-3);display:flex;align-items:center;gap:6px} .ag-meta i{width:7px;height:7px;border-radius:50%;flex:none}
+.ag-end{flex:none} .ag-done{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--ok);color:#06210f} .ag-done svg{width:14px;height:14px}
+.ag-foot{display:flex;gap:var(--s3);margin-top:var(--s5)} .ag-foot .btn{flex:1;justify-content:center}
+.ag-hint{text-align:center;margin-top:var(--s4)}
+.sx-swipe-hint{display:none;justify-content:space-between;margin-top:10px;padding:0 4px}
+/* touch: big targets, 16px inputs (no iOS zoom), nothing hover-only */
+@media (pointer:coarse){
+  .btn,.tab,.filter,.seg__b,.select,.input{min-height:44px}
+  .btn--icon{min-width:44px;min-height:44px}
+  input,select,textarea,.input,.select{font-size:16px!important}
+  .tl-card__edit{opacity:1}
+  .ev:hover,.link-card:hover,.sx-chip:hover{transform:none}
+  .check{min-height:48px;align-items:center}
+  .sx-chip{min-height:44px} .small a[href]{display:inline-block;padding:14px 8px;margin:-14px -8px}
+  .sx-swipe-hint{display:flex}
+}
+@media (hover:none){.tl-card__edit{opacity:1}}
+@media (max-width:820px){
+  .drawer{height:88vh;height:88dvh;padding-bottom:var(--sab)}
+  .drawer__grab{display:block;position:absolute;top:0;left:50%;width:120px;height:26px;margin-left:-60px;z-index:3;touch-action:none;cursor:grab}
+  .drawer__grab::before{content:"";position:absolute;left:40px;right:40px;top:9px;height:5px;border-radius:3px;background:var(--border-3,rgba(255,255,255,.25))}
+  .drawer__head{padding-top:calc(var(--s5) + 8px);touch-action:none}
+  .toast{bottom:calc(24px + var(--sab))}
+}
+@media (max-width:640px){
+  .app-header__inner{padding-top:8px;padding-bottom:8px}
+  .app-header .row{flex-wrap:nowrap}
+  .nav-row{display:none;margin-top:8px}
+  body[data-view="calendar"] .nav-row,body[data-view="tracks"] .nav-row,body[data-view="dash"] .nav-row{display:flex}
+  #nav,.nav-row .tabs{display:none} .nav-row .select{max-width:none;flex:1}
+  .main{padding:var(--s4) max(var(--s4),var(--sal)) calc(var(--tabbar-h) + var(--sab) + var(--s6)) max(var(--s4),var(--sar))}
+  .tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:60;padding:0 var(--sar) var(--sab) var(--sal);background:rgba(11,14,19,.9);backdrop-filter:saturate(150%) blur(18px);-webkit-backdrop-filter:saturate(150%) blur(18px);border-top:1px solid var(--border)}
+  .tabbar__b{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;height:var(--tabbar-h);background:none;border:0;color:var(--text-3);font:600 10.5px/1 var(--font);letter-spacing:.02em;cursor:pointer;transition:color var(--dur)}
+  .tabbar__b svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s var(--ease)}
+  .tabbar__b.is-on{color:var(--accent)} .tabbar__b:active svg{transform:scale(.88)}
+  .tabbar__b[data-tb="more"] svg{fill:currentColor;stroke:none}
+  .toast{bottom:calc(var(--tabbar-h) + var(--sab) + 12px)}
+  .page-head{flex-wrap:wrap;gap:var(--s3)}
+  .ag-head{flex-wrap:nowrap;align-items:flex-end} .ag-head>div:first-child{flex:1} .ag-head .seg{margin-left:auto;flex:none} .ag-head .seg__b{padding:8px 10px}
+  .ag-strip{margin-top:var(--s3)}
+  .day-hero .row:last-child{width:100%;flex-wrap:nowrap} .day-hero .row:last-child .btn{flex:1;justify-content:center;white-space:nowrap;padding-inline:8px}
+  .cal{max-height:calc(100dvh - var(--header-h) - var(--tabbar-h) - var(--sab) - 150px)}
+  /* flashcard session goes full screen, answers within thumb reach */
+  html:has(body>.sx-sesscard) body{overflow:hidden}
+  body>.sx-sesscard{position:fixed;inset:0;z-index:150;margin:0;max-width:none;border:0;border-radius:0;background:var(--bg);display:flex;flex-direction:column;padding:calc(var(--sat) + 14px) max(16px,var(--sar)) calc(var(--sab) + 16px) max(16px,var(--sal));overflow:auto}
+  body>.sx-sesscard .sx-sess{flex:1;display:flex;flex-direction:column;min-height:0}
+  body>.sx-sesscard .sx-flip,.sx-sess--big .sx-flip{flex:1;min-height:42dvh}
+  .sx-sess__act .btn{flex:1;min-height:64px;font-size:18px;font-weight:700;justify-content:center;border-radius:16px}
+  .sx-q5__body{justify-content:flex-end;padding-bottom:var(--s4)}
+  .sx-flip__face{overflow-y:auto;overscroll-behavior:contain}
+  .sx-q5__bar{padding:var(--s3) var(--s4)}
+  .sx-done .row .btn{min-height:56px}
+}
+.sx-flip{touch-action:pan-y}
+.sx-flip[data-swipe="got"] .sx-flip__back{border-color:var(--ok);box-shadow:0 0 0 2px rgba(74,222,128,.35) inset}
+.sx-flip[data-swipe="miss"] .sx-flip__back{border-color:var(--danger);box-shadow:0 0 0 2px rgba(255,107,94,.35) inset}
+.sx-flip{transition:transform .28s var(--ease),opacity .2s}
 @media print{.app-header,.scrim,.drawer,.cal-toolbar{display:none!important} body{background:#fff;color:#000}}
 </style>
 </head>
@@ -416,7 +512,7 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.5}
   </div>
 </header>
 <main class="main" id="main" tabindex="-1"></main>
-<div class="scrim" id="scrim"></div>
+<nav class="tabbar" id="tabbar" aria-label="Views"></nav><div class="scrim" id="scrim"></div>
 <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" aria-hidden="true"></aside>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script src="config.js"></script>
@@ -604,6 +700,11 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.5}
         const { error } = await sb.auth.signInWithOtp({ email: email.trim().toLowerCase(), options: { emailRedirectTo: location.origin + location.pathname, shouldCreateUser: true } });
         if (error) throw error;
       },
+      async verifyCode(email, code) {   /* 6-digit code from the same email: needed in the installed iPhone app */
+        if (!sb) throw new Error('Sync is not configured');
+        const { error } = await sb.auth.verifyOtp({ email: email.trim().toLowerCase(), token: String(code).replace(/\D/g, ''), type: 'email' });
+        if (error) throw error;
+      },
       async signOut() { if (sb) await sb.auth.signOut(); },
       async syncNow() { if (sb && hid) { await pull(true); await flush(); } },
       db: () => (sb && hid ? sb : null),   /* signed-in + allowlisted client, else null */
@@ -630,18 +731,21 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.5}
 .sync.is-open .sync__pop{opacity:1;transform:none;pointer-events:auto}
 .sync__pop h4{margin:0 0 6px;font-size:14px}
 .sync__pop p{margin:0 0 10px;color:var(--text-2,#aab);font-size:13px}
-.sync__pop input{width:100%;padding:9px 11px;border-radius:10px;border:1px solid var(--border-2,rgba(255,255,255,.12));background:var(--bg,#111);color:inherit;font:inherit;margin-bottom:8px}
-.sync__pop button{font:600 13px/1 var(--font,system-ui);padding:9px 12px;border-radius:10px;border:1px solid var(--border-2,rgba(255,255,255,.12));background:var(--surface-3,#2a303b);color:inherit;cursor:pointer}
+.sync__pop input{width:100%;min-height:44px;font-size:16px!important;padding:9px 11px;border-radius:10px;border:1px solid var(--border-2,rgba(255,255,255,.12));background:var(--bg,#111);color:inherit;font:inherit;margin-bottom:8px}
+.sync__pop button{font:600 14px/1 var(--font,system-ui);min-height:44px;padding:9px 14px;border-radius:10px;border:1px solid var(--border-2,rgba(255,255,255,.12));background:var(--surface-3,#2a303b);color:inherit;cursor:pointer}
 .sync__pop button.primary{background:var(--accent,#7fd8a4);color:#111;border-color:transparent}
 .sync__row{display:flex;gap:8px;flex-wrap:wrap}
 .sync__n{min-width:18px;padding:2px 5px;border-radius:99px;background:#fbbf24;color:#111;font-size:10.5px;text-align:center;display:none}
-.sync__msg{font-size:12.5px;margin-top:8px;color:var(--text-2,#aab)}`;
+.sync__msg{font-size:12.5px;margin-top:8px;color:var(--text-2,#aab)}@media (max-width:640px){.sync__pop{position:fixed;left:12px;right:12px;width:auto;top:calc(var(--sat,env(safe-area-inset-top,0px)) + 64px)}.sync__pill{min-height:44px;min-width:44px;justify-content:center}}
+`;
   const LABEL = { local: 'Local only', loading: 'Connecting…', signedout: 'Sign in to sync', syncing: 'Syncing…', synced: 'Synced', offline: 'Offline', error: 'Sync error', denied: 'No access' };
   function mountIndicator(host, sync) {
     if (!document.getElementById('sync-css')) { const s = document.createElement('style'); s.id = 'sync-css'; s.textContent = CSS; document.head.appendChild(s); }
     host.innerHTML = `<div class="sync" data-mode="local"><button class="sync__pill" type="button" aria-haspopup="dialog" aria-expanded="false"><span class="sync__dot"><\/span><span class="sync__label">Local only<\/span><span class="sync__n" hidden><\/span><\/button><div class="sync__pop" role="dialog" aria-label="Sync"><\/div><\/div>`;
     const root = host.firstElementChild, pill = root.querySelector('.sync__pill'), lab = root.querySelector('.sync__label'), badge = root.querySelector('.sync__n'), pop = root.querySelector('.sync__pop');
-    let sentTo = null;
+    const SENT = 'sched.sentTo';
+    let sentTo = null; try { const v = JSON.parse(localStorage.getItem(SENT) || 'null'); if (v && Date.now() - v.t < 36e5) sentTo = v.e; } catch (e) { }
+    const setSent = e => { sentTo = e; try { e ? localStorage.setItem(SENT, JSON.stringify({ e, t: Date.now() })) : localStorage.removeItem(SENT); } catch (x) { } };
     const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
     function draw(st) {
       root.dataset.mode = st.mode;
@@ -650,20 +754,23 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.5}
       pill.title = lab.textContent;
       let h;
       if (st.mode === 'local') h = `<h4>Local only<\/h4><p>Saved in this browser. Add the Supabase URL and key to <code>config.js<\/code> to sync between devices.<\/p>`;
-      else if (st.mode === 'signedout') h = sentTo ? `<h4>Check your email<\/h4><p>We sent a sign-in link to <b>${esc(sentTo)}<\/b>. Open it on this device.<\/p><div class="sync__row"><button type="button" data-act="again">Use a different email<\/button><\/div>`
+      else if (st.mode === 'signedout') h = sentTo ? `<h4>Check your email<\/h4><p>We sent a sign-in email to <b>${esc(sentTo)}<\/b>. Tap the link on this device${standalone ? ', or, since this is the home-screen app, type the code from the email here' : ', or type the code from the email'}.<\/p><form data-act="code"><input name="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9 ]{6,12}" maxlength="12" placeholder="6-digit code" aria-label="Code from the email" required><div class="sync__row"><button class="primary" type="submit">Sign in with code<\/button><button type="button" data-act="again">Start over<\/button><\/div><\/form>`
         : `<h4>Sign in to sync<\/h4><p>Get a one-tap sign-in link by email. Your changes stay saved here meanwhile${st.pending ? ` (${st.pending} waiting to upload)` : ''}.<\/p><form data-act="send"><input type="email" required placeholder="you@example.com" autocomplete="email" aria-label="Email"><div class="sync__row"><button class="primary" type="submit">Email me a link<\/button><\/div><\/form>`;
       else h = `<h4>${esc(LABEL[st.mode] || st.mode)}<\/h4><p>${st.email ? `Signed in as <b>${esc(st.email)}<\/b>. ` : ''}${st.mode === 'offline' ? `No connection. ${st.pending} change(s) saved here and will upload when you're back online.` : st.mode === 'synced' ? 'Everything is up to date across devices.' : st.mode === 'denied' ? 'This email is not on the allowlist.' : esc(st.message || '')}<\/p><div class="sync__row"><button type="button" data-act="now">Sync now<\/button><button type="button" data-act="out">Sign out<\/button><\/div>`;
       pop.innerHTML = h + '<div class="sync__msg" aria-live="polite"><\/div>';
     }
-    sync.onStatus(draw);
+    const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+    sync.onStatus(st => { if (sentTo && /^(synced|syncing|denied)$/.test(st.mode)) setSent(null); draw(st); });
     const msg = t => { const m = pop.querySelector('.sync__msg'); if (m) m.textContent = t; };
     pill.addEventListener('click', e => { e.stopPropagation(); const o = root.classList.toggle('is-open'); pill.setAttribute('aria-expanded', o); if (o) { const i = pop.querySelector('input'); if (i) setTimeout(() => i.focus(), 50); } });
     document.addEventListener('click', e => { if (!root.contains(e.target)) { root.classList.remove('is-open'); pill.setAttribute('aria-expanded', 'false'); } });
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && root.classList.contains('is-open')) { root.classList.remove('is-open'); pill.focus(); } });
-    pop.addEventListener('submit', async e => { e.preventDefault(); const em = pop.querySelector('input').value; msg('Sending…');
-      try { await sync.signIn(em); sentTo = em; draw(sync.status()); } catch (err) { msg(err.message || 'Could not send the link'); } });
+    pop.addEventListener('submit', async e => { e.preventDefault(); const f = e.target, inp = f.querySelector('input'), btn = f.querySelector('button[type=submit]'); if (btn) btn.disabled = true;
+      if (f.dataset.act === 'code') { msg('Checking…'); try { await sync.verifyCode(sentTo, inp.value); setSent(null); msg('Signed in'); } catch (err) { msg(err.message || 'That code did not work'); if (btn) btn.disabled = false; } return; }
+      msg('Sending…');
+      try { await sync.signIn(inp.value); setSent(inp.value.trim().toLowerCase()); draw(sync.status()); const c = pop.querySelector('input[name=code]'); if (c) setTimeout(() => c.focus(), 50); } catch (err) { msg(err.message || 'Could not send the email'); if (btn) btn.disabled = false; } });
     pop.addEventListener('click', async e => { const a = e.target.closest('[data-act]'); if (!a || a.tagName === 'FORM') return;
-      if (a.dataset.act === 'again') { sentTo = null; draw(sync.status()); }
+      if (a.dataset.act === 'again') { setSent(null); draw(sync.status()); }
       if (a.dataset.act === 'now') { msg('Syncing…'); await sync.syncNow(); msg('Done'); }
       if (a.dataset.act === 'out') { await sync.signOut(); } });
     return root;
@@ -857,11 +964,11 @@ function padWeek(w){let days=w.days.slice();const first=parseD(days[0].date).get
 function layoutLanes(blocks){const bl=blocks.map((b,i)=>({b,i,s:toMin(b.start),e:toMin(b.start)+Math.max(blockDur(b),20)})).sort((a,b)=>a.s-b.s||b.e-a.e);
   const lanes=[];bl.forEach(x=>{let l=lanes.findIndex(end=>end<=x.s);if(l<0){l=lanes.length;lanes.push(0)}lanes[l]=x.e;x.lane=l});
   bl.forEach(x=>{const grp=bl.filter(y=>y.s<x.e&&y.e>x.s);x.n=Math.max(...grp.map(y=>y.lane))+1});return bl}
-function renderCalendar(){const w=week(),days=padWeek(w),t=todayIso(),hid=S.ui.hidden;let i=0;
+function renderCalendar(){if(isPhone()&&S.ui.calMode!=='grid')return renderAgenda();const w=week(),days=padWeek(w),t=todayIso(),hid=S.ui.hidden;let i=0;
   const addDate=w.days.some(d=>d.date===S.ui.date)?S.ui.date:w.days[0].date;
   const used=TRACK_ORDER.filter(k=>w.days.some(d=>d.blocks.some(b=>b.track===k)));
   let h=`<section class="view"><div class="page-head"><div><div class="eyebrow">${esc(w.range)}</div><h1>${esc(w.label)}</h1></div><span class="spacer"></span>
-    <span class="tag tag--shift">Shift ${esc(S.settings.shiftDays.map(d=>DOW[d]).join('/'))} ${esc(S.settings.shiftStart)}–${esc(S.settings.shiftEnd)}</span><button class="btn btn--sm" data-addblk="${addDate}">＋ Add block</button></div>
+    <span class="tag tag--shift">Shift ${esc(S.settings.shiftDays.map(d=>DOW[d]).join('/'))} ${esc(S.settings.shiftStart)}–${esc(S.settings.shiftEnd)}</span><button class="btn btn--sm" data-addblk="${addDate}">＋ Add block</button>${isPhone()?calModeToggle('grid'):''}</div>
     <div class="cal-toolbar" role="group" aria-label="Show tracks">${used.map(k=>`<button class="filter" style="--c:${tcol(k)}" aria-pressed="${!hid.includes(k)}" data-filter="${k}">${esc(tlabel(k))}</button>`).join('')}<span class="spacer"></span><span class="faint small">Tap a block for details · dashed = optional</span></div>
     <div class="cal" id="cal" style="--ppm:${S.settings.ppm}px"><div class="cal__corner"></div>`;
   days.forEach(d=>{const x=parseD(d.date),sh=shiftSegs(d.date).some(([a])=>a>0);
@@ -888,7 +995,7 @@ let lastFocus=null;
 const STATUS=[['','Planned'],['done','Done'],['moved','Moved'],['skipped','Skipped']];
 const statusTag=b=>b.status?`<span class="tag tag--st-${b.status}">${{done:'Done',moved:'Moved',skipped:'Skipped'}[b.status]||''}</span>`:'';
 const editedTag=b=>b.edited?`<span class="tag tag--plain tag--edited">${b.isBase?'Edited':'Added'}</span>`:'';
-function mountDrawer(html,mode,bid){const dr=$('#drawer');dr.innerHTML=html;dr.dataset.mode=mode;dr.dataset.bid=bid||'';
+function mountDrawer(html,mode,bid){const dr=$('#drawer');dr.innerHTML='<div class="drawer__grab" aria-hidden="true"></div>'+html;dr.style.transform='';dr.dataset.mode=mode;dr.dataset.bid=bid||'';
   dr.classList.add('is-open');dr.setAttribute('aria-hidden','false');$('#scrim').classList.add('is-open');document.body.style.overflow='hidden';
   $$('[data-close]',dr).forEach(x=>x.onclick=()=>closeDrawer());return dr}
 function openDrawer(bid,from,opt={}){const r=blockById(bid);if(!r)return;const {b,d}=r,date=d.date;if(!opt.silent)lastFocus=from||document.activeElement;
@@ -1235,7 +1342,7 @@ function sessHtml(sess,{big=false}={}){if(sess.i>=sess.items.length){const tot=s
   return `<div class="sx-sess ${big?'sx-sess--big':''}"><div class="sx-sess__top"><span class="faint small mono">${sess.i+1} / ${n}<\/span><div class="sx-dots">${sess.items.map((_,k)=>`<i class="${k<sess.i?'is-done':k===sess.i?'is-on':''}"><\/i>`).join('')}<\/div>${big?'':'<button class="btn btn--sm btn--ghost" data-sess="close">End<\/button>'}<\/div>
     <div class="sx-flip ${sess.shown?'is-flipped':''}" ${sess.shown?'':`data-${big?'q5':'sess'}="show"`} role="button" tabindex="0" aria-label="${sess.shown?'Answer':'Show answer'}">
       <div class="sx-flip__face sx-flip__front"><div class="sx-flip__meta">${esc(it.meta)}<\/div><div class="sx-flip__q">${esc(it.q)}<\/div><div class="sx-flip__hint">Tap to show the answer<\/div><\/div>
-      <div class="sx-flip__face sx-flip__back"><div class="sx-flip__meta">${esc(it.q)}<\/div><div class="sx-flip__a">${esc(it.a)}<\/div><\/div><\/div>
+      <div class="sx-flip__face sx-flip__back"><div class="sx-flip__meta">${esc(it.q)}<\/div><div class="sx-flip__a">${esc(it.a)}<\/div><\/div><\/div>${sess.shown?'<div class="sx-swipe-hint faint small" aria-hidden="true"><span>← Swipe: missed<\/span><span>Got it: swipe →<\/span><\/div>':''}
     <div class="sx-sess__act">${sess.shown?`<button class="btn sx-miss ${big?'sx-big':''}" data-${big?'q5':'sess'}="miss">✗ Missed it<\/button><button class="btn sx-got ${big?'sx-big':''}" data-${big?'q5':'sess'}="got">✓ Got it<\/button>`:`<button class="btn btn--primary ${big?'sx-big':''}" data-${big?'q5':'sess'}="show">Show answer<\/button>`}<\/div><\/div>`}
 function deckFilter(){const src=S.ui.fcSrc||'all',dif=S.ui.fcDiff||'all';return SX().cards.filter(c=>(src==='all'||(src==='law'?/caselaw/.test(c.source):c.source===src))&&(dif==='all'||c.difficulty===dif))}
 function deckStats(cards){const t=todayIso(),st={due:[],fresh:[],box:[0,0,0,0,0,0]};cards.forEach(c=>{const p=SP('fc|'+c.id);if(!p){st.fresh.push(c);st.box[0]++}else{st.box[p.b||1]++;if(p.due<=t)st.due.push(c)}});
@@ -1378,7 +1485,8 @@ function renderStudy(){const tab=stTab();S.ui.studyTab=tab;
   const sc=$('#scSel');if(sc)sc.onchange=()=>{S.ui.scId=sc.value;save();renderStudy();window.scrollTo({top:0})};
   animateIn($('#main'));
   if(S.ui.studyFocus){const f=S.ui.studyFocus;S.ui.studyFocus=null;save();requestAnimationFrame(()=>{const el=document.getElementById('sx-'+f);if(!el)return;el.hidden=false;const d=$('details',el);if(d)d.open=true;
-    el.scrollIntoView({block:'start',behavior:reduced?'auto':'smooth'});el.classList.add('sx-flash');setTimeout(()=>el.classList.remove('sx-flash'),1600)})}}
+    el.scrollIntoView({block:'start',behavior:reduced?'auto':'smooth'});el.classList.add('sx-flash');setTimeout(()=>el.classList.remove('sx-flash'),1600)})}
+  if(typeof portalSess==='function')portalSess()}
 function studyGo(tab,extra){if($('#drawer').classList.contains('is-open'))closeDrawer(true);Object.assign(S.ui,{studyTab:tab},extra||{});S.ui.scroll['study:'+tab]=0;go('study')}
 function startSess(items,title){fcSess=newSess(items,title);if(!fcSess){toast('Nothing to review');return}studyGo('cards')}
 /* ---- events ---- */
@@ -1429,10 +1537,118 @@ function studyDayCard(date){if(!STUDY)return SYNC.configured?`<div class="card s
   return `<div class="card sx-mini"><div class="sx-mini__t"><div class="eyebrow">Study · week ${w.week}<\/div><b>${linkify(w.theme)}<\/b><\/div>
     <div class="row"><button class="btn btn--sm btn--primary" data-sxgo="due" ${st.due.length?'':'disabled'}>${st.due.length} due<\/button><button class="btn btn--sm" data-quick5>⚡ Quick 5<\/button><button class="btn btn--sm" data-sxtab="today">Open study<\/button><\/div><\/div>`}
 
+/* ==== iPhone / touch ==== */
+const MQ_PHONE=matchMedia('(max-width:640px)'),MQ_SHEET=matchMedia('(max-width:820px)'),isPhone=()=>MQ_PHONE.matches;
+const STANDALONE=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+document.documentElement.classList.toggle('is-standalone',STANDALONE);
+const reduceMotion=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
+/* haptics where supported (Android); iOS Safari has no vibrate API, so this is a no-op there */
+const buzz=ms=>{try{const u=navigator.userActivation;if(navigator.vibrate&&(!u||u.hasBeenActive))navigator.vibrate(ms)}catch(e){}};
+/* header height -> --header-h (sticky offsets stay right when the header changes size) */
+(()=>{const h=$('.app-header');if(!h||!window.ResizeObserver)return;new ResizeObserver(()=>document.documentElement.style.setProperty('--header-h',h.offsetHeight+'px')).observe(h)})();
+
+/* ---- bottom tab bar ---- */
+const IC={day:'<path d="M4 6h16M4 6v13a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V6M8 3v5M16 3v5M8 12h4v4H8z"/>',
+  calendar:'<path d="M4 5h16v15H4zM4 10h16M9 5v15M15 5v15"/>',
+  study:'<path d="M3 7l9-4 9 4-9 4zM7 9v5c0 1.7 2.2 3 5 3s5-1.3 5-3V9M21 7v6"/>',
+  tracks:'<path d="M4 18V9M10 18V5M16 18v-7M22 18H2"/>',
+  more:'<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>'};
+const TABBAR=[['day','Today'],['calendar','Week'],['study','Study'],['tracks','Tracks'],['more','More']];
+const MORE=[['dash','Progress','Streaks, % by track and week'],['logs','Logs','Workouts, range and weights'],['settings','Settings','Shift, units and sync']];
+function renderTabbar(){if(S.ui.view!=='study')$$('body>.sx-sesscard').forEach(e=>e.remove());const tb=$('#tabbar');if(!tb)return;
+  if(!tb.firstChild){tb.innerHTML=TABBAR.map(([k,l])=>`<button class="tabbar__b" data-tb="${k}" type="button"><svg viewBox="0 0 24 24" aria-hidden="true">${IC[k]}<\/svg><span>${l}<\/span><\/button>`).join('');
+    tb.addEventListener('click',e=>{const b=e.target.closest('[data-tb]');if(!b)return;const k=b.dataset.tb;buzz(6);
+      if(k==='more')return openMore();
+      if(k==='day'){const t=todayIso();if(S.ui.view==='day'&&dayObj(t))return go('day',{date:t});return go('day')}
+      if(k===S.ui.view){scrollTo({top:0,behavior:reduceMotion()?'auto':'smooth'});return}go(k)})}
+  const cur=MORE.some(m=>m[0]===S.ui.view)?'more':S.ui.view;
+  $$('[data-tb]',tb).forEach(b=>{const on=b.dataset.tb===cur;b.classList.toggle('is-on',on);on?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current')});
+  document.body.dataset.view=S.ui.view}
+function openMore(){lastFocus=document.activeElement;
+  const dr=mountDrawer(`<div class="drawer__inner"><div class="drawer__head"><div style="flex:1"><h2 id="drawerTitle">More<\/h2><\/div><button class="btn btn--icon" data-close aria-label="Close">✕<\/button><\/div>
+    <div class="drawer__body"><div class="more-list">${MORE.map(([k,l,s])=>`<button class="more-item ${S.ui.view===k?'is-on':''}" data-more="${k}"><b>${l}<\/b><span>${s}<\/span><\/button>`).join('')}
+    <a class="more-item" href="meals.html"><b>Meal plan ↗<\/b><span>The page your wife uses: menu, packing, groceries<\/span><\/a><\/div><\/div><\/div>`,'more');
+  $$('[data-more]',dr).forEach(b=>b.onclick=()=>{closeDrawer(true);go(b.dataset.more)});setTimeout(()=>{const f=$('[data-close]',dr);f&&f.focus({preventScroll:true})},60)}
+
+/* phone: a running flashcard session goes full screen at body level (outside animated/contained ancestors) */
+function portalSess(){$$('body>.sx-sesscard').forEach(e=>e.remove());if(!isPhone()||S.ui.view!=='study')return;
+  const c=$('#main .sx-sesscard');if(c){c.setAttribute('role','dialog');c.setAttribute('aria-modal','true');c.setAttribute('aria-label','Flashcards');document.body.appendChild(c);const f=$('[data-sess="show"],.sx-got,[data-sess="close"]',c);f&&f.focus({preventScroll:true})}}
+/* ---- calendar agenda (phone default) ---- */
+const calModeToggle=m=>`<div class="seg" role="group" aria-label="Calendar layout"><button class="seg__b" data-calmode="agenda" aria-pressed="${m==='agenda'}">Agenda<\/button><button class="seg__b" data-calmode="grid" aria-pressed="${m==='grid'}">Week grid<\/button><\/div>`;
+function agendaDate(w){const t=todayIso();return w.days.some(d=>d.date===S.ui.date)?S.ui.date:(w.days.some(d=>d.date===t)?t:w.days[0].date)}
+function renderAgenda(){const w=week(),date=agendaDate(w),t=todayIso();S.ui.date=date;const d=dayObj(date),p=parseD(date);
+  const items=d.blocks.map(b=>({b,s:toMin(b.start)})).concat(shiftSegs(date).map(([a,z])=>({shift:[a,z],s:a}))).sort((x,y)=>x.s-y.s||(x.shift?-1:1));
+  let h=`<section class="view view--agenda"><div class="page-head ag-head"><div style="min-width:0"><div class="eyebrow" style="white-space:nowrap">${esc(w.label.split(':')[0])}${date===t?' · Today':''}<\/div><h1>${DOW[p.getDay()]}, ${MON[p.getMonth()]} ${p.getDate()}<\/h1><\/div><span class="spacer"><\/span>${calModeToggle('agenda')}<\/div>
+    <div class="ag-strip" role="tablist" aria-label="Days">${w.days.map(x=>{const q=parseD(x.date),pc=dayPct(x);return `<button class="ag-day ${x.date===date?'is-on':''} ${x.date===t?'is-today':''}" role="tab" aria-selected="${x.date===date}" data-agday="${x.date}"><span class="ag-day__dow">${DOW[q.getDay()].slice(0,2)}<\/span><span class="ag-day__n">${q.getDate()}<\/span><span class="ag-day__p" style="--p:${pc}"><\/span><\/button>`}).join('')}<\/div>
+    <div class="ag-sub"><span class="muted">${esc(d.title)}<\/span><span class="faint small mono">${dayPct(d)}%<\/span><\/div>
+    <div class="ag-list">`;
+  if(!items.length)h+=`<div class="empty card">Nothing planned. Rest day.<\/div>`;
+  items.forEach(({b,shift},n)=>{
+    if(shift){h+=`<div class="ag-item ag-item--shift" style="--i:${n}"><div class="ag-time">${fmtM(shift[0])}<small>${fmtM(shift[1])}<\/small><\/div><div class="ag-body"><b>On shift · patrol<\/b><span class="faint small">${shift[0]===0?'Ends '+fmtM(shift[1]):'Starts '+fmtM(shift[0])}<\/span><\/div><\/div>`;return}
+    const done=(b.items.length&&blockPct(b)===100)||b.status==='done',cnt=b.items.length?`${b.items.filter(x=>S.checks[x.id]).length}/${b.items.length}`:'';
+    h+=`<button class="ag-item ${done?'is-done':''} ${b.status==='skipped'?'is-skipped':''} ${b.flex?'is-flex':''}" style="--c:${tcol(b.track)};--i:${n}" data-agblock="${esc(b.bid)}"><div class="ag-time">${b.start}<small>${b.end}<\/small><\/div>
+      <div class="ag-body"><span class="ag-title">${esc(b.title)}<\/span><span class="ag-meta"><i style="background:${tcol(b.track)}"><\/i>${esc(tlabel(b.track))}${b.flex?' · optional':''}${b.status&&b.status!=='done'?' · '+b.status:''}<\/span><\/div>
+      <span class="ag-end">${done?`<span class="ag-done">${CHECK_SVG}<\/span>`:cnt?`<span class="mono small faint">${cnt}<\/span>`:''}<\/span><\/button>`});
+  h+=`<\/div><div class="ag-foot"><button class="btn" data-addblk="${date}">＋ Add block<\/button><button class="btn btn--primary" data-agopen="${date}">Open day checklist →<\/button><\/div>
+    <p class="faint small ag-hint">Swipe left or right to change day.<\/p><\/section>`;
+  $('#main').innerHTML=h;
+  $$('[data-agday]').forEach(el=>el.onclick=()=>{if(el.dataset.agday===S.ui.date)return;const dir=el.dataset.agday>S.ui.date?1:-1;S.ui.date=el.dataset.agday;save();slideView(dir)});
+  $$('[data-agblock]').forEach(el=>el.onclick=()=>openDrawer(el.dataset.agblock,el));
+  $$('[data-agopen]').forEach(el=>el.onclick=()=>go('day',{date:el.dataset.agopen}));
+  const on=$('.ag-day.is-on');on&&on.scrollIntoView({block:'nearest',inline:'center'})}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-calmode]');if(!b)return;S.ui.calMode=b.dataset.calmode;save();renderView()});
+MQ_PHONE.addEventListener('change',()=>{if(S.ui.view==='calendar')renderView();renderTabbar()});
+
+/* ---- swipe between days (agenda + day view) ---- */
+function slideView(dir){renderView();if(reduceMotion())return;const v=$('#main .view');
+  v&&v.animate([{transform:`translateX(${dir*36}px)`,opacity:.2},{transform:'none',opacity:1}],{duration:260,easing:'cubic-bezier(.2,.8,.2,1)'})}
+function stepDay(dir){const days=allDays(),i=days.findIndex(x=>x.date===S.ui.date),n=days[i+dir];if(i<0||!n){buzz(12);return}
+  S.ui.date=n.date;S.ui.week=dayObj(n.date).week;save();buzz(6);slideView(dir);if(S.ui.view==='day')scrollTo(0,0)}
+function swipeable(){return (S.ui.view==='day'&&isPhone())||(S.ui.view==='calendar'&&isPhone()&&S.ui.calMode!=='grid')}
+(()=>{let x0,y0,t0,ok=false;const m=$('#main');
+  m.addEventListener('touchstart',e=>{ok=false;if(e.touches.length!==1||!swipeable())return;const t=e.touches[0],el=e.target;
+    if(t.clientX<24||el.closest('input,textarea,select,.tabs,.ag-strip,.cal,[data-noswipe],.sx-flip'))return;
+    for(let p=el;p&&p!==m;p=p.parentElement){if(p.scrollWidth>p.clientWidth+4&&/(auto|scroll)/.test(getComputedStyle(p).overflowX))return}
+    x0=t.clientX;y0=t.clientY;t0=Date.now();ok=true},{passive:true});
+  m.addEventListener('touchend',e=>{if(!ok)return;ok=false;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;
+    if(Math.abs(dx)>64&&Math.abs(dx)>Math.abs(dy)*1.6&&Date.now()-t0<700)stepDay(dx<0?1:-1)},{passive:true});
+  m.addEventListener('touchcancel',()=>ok=false,{passive:true})})();
+
+/* ---- bottom sheet: grab handle + drag to dismiss ---- */
+(()=>{const dr=$('#drawer');let y0=null,dy=0,t0=0;
+  dr.addEventListener('touchstart',e=>{if(!MQ_SHEET.matches||e.touches.length!==1)return;const el=e.target;
+    const body=$('.drawer__body',dr),inHead=el.closest('.drawer__grab,.drawer__head'),atTop=body&&body.contains(el)&&body.scrollTop<=0;
+    if(!(inHead||atTop)||el.closest('input,textarea,select,button:not(.drawer__grab),a'))return;
+    y0=e.touches[0].clientY;dy=0;t0=Date.now()},{passive:true});
+  dr.addEventListener('touchmove',e=>{if(y0==null)return;dy=e.touches[0].clientY-y0;
+    if(dy<=0){if(dr.style.transform){dr.style.transform='';dr.style.transition=''}return}
+    if(e.cancelable)e.preventDefault();dr.style.transition='none';dr.style.transform=`translateY(${dy}px)`;$('#scrim').style.opacity=String(Math.max(0,1-dy/400))},{passive:false});
+  const end=()=>{if(y0==null)return;const v=dy/Math.max(1,Date.now()-t0);y0=null;dr.style.transition='';$('#scrim').style.opacity='';
+    if(dy>110||(dy>30&&v>.55)){buzz(8);closeDrawer();requestAnimationFrame(()=>dr.style.transform='')}else dr.style.transform=''};
+  dr.addEventListener('touchend',end);dr.addEventListener('touchcancel',end)})();
+
+/* ---- flashcards: swipe right = got it, left = missed ---- */
+(()=>{let card=null,x0=0,y0=0,dx=0,lock=null;
+  document.addEventListener('touchstart',e=>{const c=e.target.closest('.sx-flip.is-flipped');if(!c||e.touches.length!==1)return;card=c;x0=e.touches[0].clientX;y0=e.touches[0].clientY;dx=0;lock=null},{passive:true});
+  document.addEventListener('touchmove',e=>{if(!card)return;const t=e.touches[0];dx=t.clientX-x0;const dy=t.clientY-y0;
+    if(lock==null&&(Math.abs(dx)>8||Math.abs(dy)>8))lock=Math.abs(dx)>Math.abs(dy)?'x':'y';if(lock!=='x')return;
+    if(e.cancelable)e.preventDefault();card.style.transition='none';card.style.transform=`translateX(${dx}px) rotate(${dx/22}deg)`;
+    card.dataset.swipe=dx>40?'got':dx<-40?'miss':''},{passive:false});
+  const end=()=>{if(!card)return;const c=card;card=null;if(lock!=='x')return;const go2=Math.abs(dx)>90?(dx>0?'got':'miss'):null;c.style.transition='';
+    if(!go2){c.style.transform='';c.dataset.swipe='';return}
+    buzz(go2==='got'?10:[8,40,8]);const btn=c.closest('.sx-sess')&&$(go2==='got'?'.sx-got':'.sx-miss',c.closest('.sx-sess'));
+    if(reduceMotion()){btn&&btn.click();return}
+    c.style.transform=`translateX(${dx>0?120:-120}vw) rotate(${dx>0?18:-18}deg)`;c.style.opacity='0';setTimeout(()=>btn&&btn.click(),190)};
+  document.addEventListener('touchend',end);document.addEventListener('touchcancel',()=>{if(card){card.style.transform='';card.style.transition='';card=null}})})();
+
+/* ---- offline app shell ---- */
+if('serviceWorker' in navigator&&!/[?&]nosw\b/.test(location.search)&&(location.protocol==='https:'||location.hostname==='127.0.0.1'||location.hostname==='localhost'))
+  addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+
 
 /* ==== Router ==== */
 const RENDER={calendar:renderCalendar,day:renderDay,tracks:renderTracks,study:renderStudy,dash:renderDash,logs:renderLogs,settings:renderSettings};
-function syncNav(){const tl=$('#nav');if(!tl)return;$$('[role=tab]',tl).forEach(t=>{const on=t.dataset.key===S.ui.view;t.setAttribute('aria-selected',on);t.tabIndex=on?0:-1});placeIndicator(tl)}
+function syncNav(){renderTabbar();const tl=$('#nav');if(!tl)return;$$('[role=tab]',tl).forEach(t=>{const on=t.dataset.key===S.ui.view;t.setAttribute('aria-selected',on);t.tabIndex=on?0:-1});placeIndicator(tl)}
 function renderView(){if(!RENDER[S.ui.view])S.ui.view='calendar';syncNav();$('#weekSelect').value=S.ui.week;RENDER[S.ui.view]();save()}
 function render(){renderHeader();renderCountdowns();renderView()}
 (function fromHash(){const p=new URLSearchParams(location.hash.slice(1));['view','date','week','track','logTab'].forEach(k=>{if(p.get(k)!=null)S.ui[k]=p.get(k)});if(p.get('st'))S.ui.studyTab=p.get('st');if(p.get('open')!=null)S.ui.openIdx=p.get('open');

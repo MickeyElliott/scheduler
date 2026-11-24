@@ -87,7 +87,7 @@ function sessHtml(sess,{big=false}={}){if(sess.i>=sess.items.length){const tot=s
   return `<div class="sx-sess ${big?'sx-sess--big':''}"><div class="sx-sess__top"><span class="faint small mono">${sess.i+1} / ${n}</span><div class="sx-dots">${sess.items.map((_,k)=>`<i class="${k<sess.i?'is-done':k===sess.i?'is-on':''}"></i>`).join('')}</div>${big?'':'<button class="btn btn--sm btn--ghost" data-sess="close">End</button>'}</div>
     <div class="sx-flip ${sess.shown?'is-flipped':''}" ${sess.shown?'':`data-${big?'q5':'sess'}="show"`} role="button" tabindex="0" aria-label="${sess.shown?'Answer':'Show answer'}">
       <div class="sx-flip__face sx-flip__front"><div class="sx-flip__meta">${esc(it.meta)}</div><div class="sx-flip__q">${esc(it.q)}</div><div class="sx-flip__hint">Tap to show the answer</div></div>
-      <div class="sx-flip__face sx-flip__back"><div class="sx-flip__meta">${esc(it.q)}</div><div class="sx-flip__a">${esc(it.a)}</div></div></div>
+      <div class="sx-flip__face sx-flip__back"><div class="sx-flip__meta">${esc(it.q)}</div><div class="sx-flip__a">${esc(it.a)}</div></div></div>${sess.shown?'<div class="sx-swipe-hint faint small" aria-hidden="true"><span>← Swipe: missed</span><span>Got it: swipe →</span></div>':''}
     <div class="sx-sess__act">${sess.shown?`<button class="btn sx-miss ${big?'sx-big':''}" data-${big?'q5':'sess'}="miss">✗ Missed it</button><button class="btn sx-got ${big?'sx-big':''}" data-${big?'q5':'sess'}="got">✓ Got it</button>`:`<button class="btn btn--primary ${big?'sx-big':''}" data-${big?'q5':'sess'}="show">Show answer</button>`}</div></div>`}
 function deckFilter(){const src=S.ui.fcSrc||'all',dif=S.ui.fcDiff||'all';return SX().cards.filter(c=>(src==='all'||(src==='law'?/caselaw/.test(c.source):c.source===src))&&(dif==='all'||c.difficulty===dif))}
 function deckStats(cards){const t=todayIso(),st={due:[],fresh:[],box:[0,0,0,0,0,0]};cards.forEach(c=>{const p=SP('fc|'+c.id);if(!p){st.fresh.push(c);st.box[0]++}else{st.box[p.b||1]++;if(p.due<=t)st.due.push(c)}});
@@ -230,7 +230,8 @@ function renderStudy(){const tab=stTab();S.ui.studyTab=tab;
   const sc=$('#scSel');if(sc)sc.onchange=()=>{S.ui.scId=sc.value;save();renderStudy();window.scrollTo({top:0})};
   animateIn($('#main'));
   if(S.ui.studyFocus){const f=S.ui.studyFocus;S.ui.studyFocus=null;save();requestAnimationFrame(()=>{const el=document.getElementById('sx-'+f);if(!el)return;el.hidden=false;const d=$('details',el);if(d)d.open=true;
-    el.scrollIntoView({block:'start',behavior:reduced?'auto':'smooth'});el.classList.add('sx-flash');setTimeout(()=>el.classList.remove('sx-flash'),1600)})}}
+    el.scrollIntoView({block:'start',behavior:reduced?'auto':'smooth'});el.classList.add('sx-flash');setTimeout(()=>el.classList.remove('sx-flash'),1600)})}
+  if(typeof portalSess==='function')portalSess()}
 function studyGo(tab,extra){if($('#drawer').classList.contains('is-open'))closeDrawer(true);Object.assign(S.ui,{studyTab:tab},extra||{});S.ui.scroll['study:'+tab]=0;go('study')}
 function startSess(items,title){fcSess=newSess(items,title);if(!fcSess){toast('Nothing to review');return}studyGo('cards')}
 /* ---- events ---- */
