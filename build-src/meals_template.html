@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script src="config.js"></script>
+<script>/*__SYNC__*/</script>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Crect width=%2216%22 height=%2216%22 rx=%224%22 fill=%22%23c8f560%22/%3E%3C/svg%3E">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14161a">
+<title>Mickey's Meal Plan · Week of Nov 30</title>
+<style>
+:root{
+  --bg:#14161a; --surface:#1c1f25; --surface-2:#23272e; --surface-3:#2c3139;
+  --border:rgba(255,255,255,.07); --border-2:rgba(255,255,255,.12);
+  --text:#eef0f2; --text-2:#b4bac3; --text-3:#7c848f;
+  --green:#7fd8a4; --green-soft:rgba(127,216,164,.12); --peach:#f5b38a; --peach-soft:rgba(245,179,138,.12); --sky:#8ec5ff; --sky-soft:rgba(142,197,255,.12);
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;
+  --r:14px; --r-lg:20px; --ease:cubic-bezier(.2,.8,.2,1);
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+*,*::before,*::after{box-sizing:border-box}
+html{scrollbar-width:thin;scrollbar-color:var(--surface-3) transparent;-webkit-text-size-adjust:100%}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:var(--surface-3);border-radius:99px;border:2px solid transparent;background-clip:padding-box}::-webkit-scrollbar-track{background:transparent}
+body{margin:0;background:var(--bg);color:var(--text);font:400 16px/1.6 var(--font);-webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(600px 300px at 0 0,rgba(127,216,164,.07),transparent 70%),radial-gradient(600px 300px at 100% 0,rgba(245,179,138,.06),transparent 70%);background-attachment:fixed}
+h1,h2,h3{margin:0;line-height:1.25;letter-spacing:-.01em} p{margin:0 0 12px} ul,ol{margin:8px 0;padding-left:1.25rem} li{margin:4px 0} li::marker{color:var(--text-3)}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+:focus-visible{outline:2px solid var(--green);outline-offset:2px;border-radius:8px}
+.wrap{max-width:760px;margin:0 auto;padding:0 20px}
+header.top{padding:32px 0 8px}
+.eyebrow{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--green)}
+h1{font-size:28px;font-weight:700;margin-top:6px}
+.lede{color:var(--text-2);margin-top:8px}
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:22px 0 6px}
+.pill{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px}
+.pill b{display:block;font-size:20px;font-weight:700} .pill span{font-size:12.5px;color:var(--text-3)}
+nav.tabsbar{position:sticky;top:0;z-index:20;background:rgba(20,22,26,.86);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border);margin-top:18px}
+.tabs{position:relative;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding:10px 0}
+.tabs::-webkit-scrollbar{display:none}
+.tabs.is-scrollable{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 18px,#000 calc(100% - 18px),transparent);mask-image:linear-gradient(90deg,transparent 0,#000 18px,#000 calc(100% - 18px),transparent)}
+.tab{position:relative;z-index:1;padding:9px 16px;border-radius:99px;font-size:15px;font-weight:600;color:var(--text-2);white-space:nowrap;transition:color .2s}
+.tab[aria-selected="true"]{color:#10201a}
+.tabs__ind{position:absolute;top:10px;bottom:10px;left:0;width:0;border-radius:99px;background:var(--green);transition:transform .35s var(--ease),width .35s var(--ease)}
+main{padding:24px 0 80px}
+.panel{animation:fade .35s var(--ease) both} .panel[hidden]{display:none}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.section-h{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);margin:28px 0 12px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px;margin-bottom:14px}
+.card.today{border-color:rgba(127,216,164,.45);box-shadow:0 0 0 3px var(--green-soft)}
+.card__head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+.card__title{font-size:19px;font-weight:700;flex:1}
+.badge{font-size:12px;font-weight:600;padding:3px 10px;border-radius:99px;background:var(--surface-3);color:var(--text-2)}
+.badge.work{background:var(--sky-soft);color:var(--sky)} .badge.home{background:var(--green-soft);color:var(--green)} .badge.now{background:var(--green);color:#10201a}
+.note{color:var(--text-2);font-size:14.5px}
+.meal{display:grid;grid-template-columns:92px 1fr;gap:12px;padding:12px 0;border-top:1px solid var(--border)}
+.meal:first-of-type{border-top:0}
+.meal__time{font-size:14px;font-weight:600;color:var(--text-3);font-variant-numeric:tabular-nums}
+.meal__name{font-size:13px;font-weight:600;color:var(--peach);text-transform:uppercase;letter-spacing:.04em}
+.meal__what{font-size:16px}
+.callout{border-radius:var(--r);padding:12px 14px;font-size:15px;margin-top:12px;background:var(--peach-soft);border:1px solid rgba(245,179,138,.25);color:#fbd9c2}
+.callout.blue{background:var(--sky-soft);border-color:rgba(142,197,255,.25);color:#cfe5ff}
+.callout.green{background:var(--green-soft);border-color:rgba(127,216,164,.25);color:#cdf1dc}
+.checks{list-style:none;margin:0;padding:0}
+.checks li{margin:0}
+.chk{display:flex;gap:14px;align-items:flex-start;padding:11px 8px;margin:0 -8px;border-radius:12px;cursor:pointer;transition:background .2s}
+.chk:hover{background:rgba(255,255,255,.03)}
+.chk input{position:absolute;opacity:0;pointer-events:none}
+.box{flex:none;width:24px;height:24px;margin-top:1px;border-radius:8px;border:2px solid var(--border-2);display:grid;place-items:center;transition:background .2s,border-color .2s}
+.box svg{width:14px;height:14px;fill:none;stroke:#10201a;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:18;stroke-dashoffset:18;transition:stroke-dashoffset .25s var(--ease) .05s}
+.chk input:checked+.box{background:var(--green);border-color:var(--green);animation:pop .3s var(--ease)}
+.chk input:checked+.box svg{stroke-dashoffset:0}
+.chk input:focus-visible+.box{outline:2px solid var(--green);outline-offset:2px}
+.chk__t{transition:color .2s} .chk input:checked~.chk__t{color:var(--text-3);text-decoration:line-through}
+.chk__time{display:inline-block;min-width:44px;font-weight:700;color:var(--green);font-variant-numeric:tabular-nums;margin-right:6px}
+@keyframes pop{0%{transform:scale(.85)}60%{transform:scale(1.12)}100%{transform:scale(1)}}
+.progress{display:flex;align-items:center;gap:12px;margin:4px 0 16px}
+.bar{flex:1;height:8px;background:var(--surface-3);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--green);border-radius:99px;transition:width .6s var(--ease)}
+.count{font-size:14px;font-weight:600;color:var(--text-2);font-variant-numeric:tabular-nums}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:12px;font-size:14.5px;font-weight:600;background:var(--surface-2);border:1px solid var(--border-2);transition:background .2s}
+.btn:hover{background:var(--surface-3)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+details.acc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);margin-bottom:12px;overflow:hidden}
+details.acc>summary{list-style:none;cursor:pointer;padding:18px 20px;display:flex;align-items:center;gap:12px}
+details.acc>summary::-webkit-details-marker{display:none}
+details.acc>summary::after{content:"";margin-left:auto;flex:none;width:9px;height:9px;border-right:2px solid var(--text-3);border-bottom:2px solid var(--text-3);transform:rotate(45deg);transition:transform .3s var(--ease)}
+details.acc[open]>summary::after{transform:rotate(225deg)}
+.acc__t{font-size:17px;font-weight:700} .acc__s{display:block;font-size:13.5px;color:var(--text-3);font-weight:500;margin-top:2px}
+.acc__b{padding:0 20px 20px;overflow:hidden}
+.acc__b h3{font-size:14px;font-weight:700;color:var(--peach);margin:14px 0 4px;text-transform:uppercase;letter-spacing:.05em}
+.portion{font-size:14.5px;color:#cdf1dc;background:var(--green-soft);border-radius:10px;padding:8px 12px;margin-top:6px}
+.store-h{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:700;margin:0 0 6px}
+.store-h span{font-size:13px;color:var(--text-3);font-weight:500;margin-left:auto}
+.foot{color:var(--text-3);font-size:13px;text-align:center;padding:12px 0 40px}
+@media (max-width:520px){.wrap{padding:0 16px} h1{font-size:24px} .summary{gap:8px} .pill{padding:10px} .pill b{font-size:17px} .meal{grid-template-columns:1fr;gap:2px} .card{padding:16px}}
+@media print{nav.tabsbar{display:none}.panel[hidden]{display:block!important}body{background:#fff;color:#000}}
+.topbar{display:flex;align-items:center;gap:10px;justify-content:space-between}
+.topbar__r{display:flex;align-items:center;gap:8px}
+.editbtn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:99px;font-size:13.5px;font-weight:600;background:var(--surface-2);border:1px solid var(--border-2);transition:background .2s,color .2s,border-color .2s}
+.editbtn svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.editbtn[aria-pressed="true"]{background:var(--green);color:#10201a;border-color:var(--green)}
+.ib{flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:10px;color:var(--text-3);transition:background .2s,color .2s}
+.ib svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ib:hover{background:var(--surface-3);color:var(--text)} .ib--x:hover{color:#ff9b9b}
+.li-row{display:flex;align-items:center;gap:6px}.li-row .chk{flex:1}
+.is-removed{opacity:.45}.is-removed .meal__what,.is-removed .chk__t{text-decoration:line-through}
+.meal{grid-template-columns:92px 1fr auto}
+.meal__tools{display:flex;gap:2px;align-self:center}
+.meal--form{display:block;animation:fade .3s var(--ease) both}
+.panel--quiet{animation:none}
+.dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-left:7px;vertical-align:middle}
+.mform{display:grid;gap:10px;padding:4px 0}.mform__grid{display:grid;grid-template-columns:120px 1fr;gap:10px}
+.mform label>span{display:block;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text-3);margin-bottom:4px}
+.in{width:100%;box-sizing:border-box;font:inherit;font-size:16px;color:var(--text);background:var(--bg);border:1px solid var(--border-2);border-radius:10px;padding:9px 11px;transition:border-color .2s,box-shadow .2s}
+.in:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px var(--green-soft)} textarea.in{resize:vertical;line-height:1.5}
+.btn--go{background:var(--green);color:#10201a;border-color:var(--green)}.btn--go:hover{background:#9be3b9}
+.btn--ghost{background:none;border-style:dashed;color:var(--text-2);width:100%;justify-content:center;margin-top:8px}
+.gadd{display:flex;gap:8px;margin-top:10px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:var(--surface-3);border:1px solid var(--border-2);padding:9px 16px;border-radius:99px;font-size:14px;font-weight:600;transition:opacity .25s,transform .25s var(--ease);z-index:50}
+.toast.is-on{opacity:1;transform:translate(-50%,0)}
+body.is-editing .card{border-color:rgba(127,216,164,.22)}
+@media (max-width:520px){.meal{grid-template-columns:1fr auto}.meal__time{grid-column:1/-1}.mform__grid{grid-template-columns:1fr}.topbar .sync__label{display:none}.topbar .sync__n{display:inline-block}.topbar .sync__n[hidden]{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="topbar"><div class="eyebrow">Meal plan · Week of Nov 30</div><div class="topbar__r"><div id="syncHost"></div><button class="editbtn" id="editBtn" aria-pressed="false"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11 2.5l2.5 2.5L6 12.5H3.5V10z"/></svg><span>Edit</span></button></div></div>
+    <h1>Mickey's meals this week</h1>
+    <p class="lede">Everything for shopping, Sunday cooking and packing his work cooler. Checkmarks and changes sync with Mickey’s tracker once you sign in (tap the status dot). Tap Edit to change meals or the grocery list.</p>
+    <div class="summary">
+      <div class="pill"><b>3 + 1</b><span>meals + 1 shake a day</span></div>
+      <div class="pill"><b>~2,300</b><span>calories a day</span></div>
+      <div class="pill"><b>~200 g</b><span>protein a day</span></div>
+    </div>
+  </header>
+</div>
+<nav class="tabsbar"><div class="wrap"><div class="tabs" role="tablist" aria-label="Sections" id="tabs"></div></div></nav>
+<main class="wrap" id="main"></main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="wrap foot">Times are Pacific. Built Nov 24, 2026.</div>
+<script id="meals-data" type="application/json">/*__MEALS__*/</script>
+<script>
+(()=>{'use strict';
+const D=JSON.parse(document.getElementById('meals-data').textContent);
+const KEY='mealsprep.v1';
+let S;try{S=JSON.parse(localStorage.getItem(KEY)||'null')||{}}catch(e){S={}}
+S.tab=S.tab||'week';S.scroll=S.scroll||{};S.open=S.open||{};S.edit=!!S.edit;
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const SVG='<svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5 5.5 10.5 11.5 3.5"/></svg>';
+const SYNC=SchedSync.create({onRemote:()=>remote()});
+/* one-time: old phone-only checkmarks become synced records (old stamp so newer edits win) */
+if(S.checks){if(!SYNC.hasScope('mcheck'))Object.keys(S.checks).forEach(k=>SYNC.seed('mcheck',k,1));delete S.checks;save()}
+let C={},E={};const pull=()=>{C=SYNC.map('mcheck');E=SYNC.map('medit')};pull();
+let uid=0;
+const chk=(id,html,extra='')=>{const u='k'+(uid++);return `<li class="li-row"><label class="chk" for="${u}"><input type="checkbox" id="${u}" data-k="${esc(id)}" ${C[id]?'checked':''}><span class="box">${SVG}</span><span class="chk__t">${html}</span></label>${extra}</li>`};
+const pad=n=>String(n).padStart(2,'0');const now=new Date();const today=now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate());
+const TABS=[['week','This week'],['pack','Pack for work'],['prep','Sunday prep'],['grocery','Groceries'],['recipes','Recipes']];
+const typeBadge=t=>t==='shift'?'<span class="badge work">Works tonight</span>':t==='postshift'?'<span class="badge">Sleeps in after work</span>':'<span class="badge home">Home day</span>';
+const newId=()=>SchedSync.newId();
+const mins=t=>{const m=String(t||'').trim().toLowerCase().match(/^(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/);if(!m)return 9999;let h=+m[1]%12;if(m[3]==='pm')h+=12;if(!m[3]&&+m[1]===12)h=12;return h*60+(+m[2]||0)};
+const ib=(attrs,label,icon,cls='')=>`<button type="button" class="ib ${cls}" ${attrs} aria-label="${esc(label)}" title="${esc(label)}">${icon}</button>`;
+const PEN='<svg viewBox="0 0 16 16"><path d="M11 2.5l2.5 2.5L6 12.5H3.5V10z"/></svg>',X='<svg viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8"/></svg>',UNDO='<svg viewBox="0 0 16 16"><path d="M5 3L2 6l3 3"/><path d="M2.5 6H10a3.5 3.5 0 010 7H6"/></svg>';
+
+/* ---- models: base plan + her edits ---- */
+function dayMeals(d){const L=d.meals.map((m,i)=>{const k='menu|'+d.date+'|'+i,o=E[k];if(o&&o.removed)return {k,base:true,removed:true,time:m[0],name:m[1],what:m[2]};
+    return o?{k,base:true,edited:true,time:o.time,name:o.name,what:o.what}:{k,base:true,time:m[0],name:m[1],what:m[2]}});
+  Object.entries(E).forEach(([k,v])=>{if(v&&k.startsWith('menuadd|'+d.date+'|'))L.push({k,added:true,time:v.time,name:v.name,what:v.what,c:v.c||0})});
+  return L.map((x,i)=>Object.assign(x,{o:i})).sort((a,b)=>(mins(a.time)-mins(b.time))||(a.o-b.o))}
+function groceryModel(){return D.grocery.map(([sec,items])=>{const list=items.map((t,i)=>({id:'g|'+sec+'|'+i,text:t,removed:!!E['gdel|g|'+sec+'|'+i]}));
+  Object.entries(E).forEach(([k,v])=>{if(k.startsWith('gadd|')&&v&&v.section===sec)list.push({id:'g|add|'+k.slice(5),k,text:v.text,added:true})});return [sec,list]})}
+
+/* ---- panels ---- */
+const mealForm=(k,m={})=>`<form class="mform" data-mform="${esc(k)}"><div class="mform__grid"><label><span>Time</span><input class="in" name="time" value="${esc(m.time||'')}" placeholder="6:30 pm" required></label><label><span>Meal</span><input class="in" name="name" value="${esc(m.name||'')}" placeholder="Dinner" required></label></div><label><span>What</span><textarea class="in" name="what" rows="2" required placeholder="What's on the plate">${esc(m.what||'')}</textarea></label><div class="row"><button class="btn btn--go">Save</button><button type="button" class="btn" data-cancel>Cancel</button></div></form>`;
+let editing=null;/* key of the open inline form */
+function mealRow(d,m){if(editing===m.k)return `<div class="meal meal--form">${mealForm(m.k,m)}</div>`;
+  const tools=!S.edit?'':m.removed?`<div class="meal__tools">${ib(`data-restore="${esc(m.k)}"`,'Put back',UNDO)}</div>`:`<div class="meal__tools">${ib(`data-editmeal="${esc(m.k)}"`,'Change',PEN)}${m.edited?ib(`data-restore="${esc(m.k)}"`,'Back to original',UNDO):''}${ib(`data-delmeal="${esc(m.k)}"`,'Remove',X,'ib--x')}</div>`;
+  if(m.removed&&!S.edit)return '';
+  return `<div class="meal ${m.removed?'is-removed':''}"><div class="meal__time">${esc(m.time)}</div><div class="meal__main"><div class="meal__name">${esc(m.name)}${m.edited||m.added?'<i class="dot" title="Changed"></i>':''}</div><div class="meal__what">${esc(m.what)}</div></div>${tools}</div>`}
+function weekPanel(){return D.menu.map(d=>{const addK='new|'+d.date;return `<div class="card ${d.date===today?'today':''}"><div class="card__head"><div class="card__title">${esc(d.label)}</div>${d.date===today?'<span class="badge now">Today</span>':''}${typeBadge(d.type)}</div>
+  ${d.note?`<p class="note">${esc(d.note)}</p>`:''}${dayMeals(d).map(m=>mealRow(d,m)).join('')}
+  ${S.edit?(editing===addK?`<div class="meal meal--form">${mealForm(addK)}</div>`:`<button class="btn btn--ghost add" data-addmeal="${esc(addK)}">＋ Add a meal</button>`):''}
+  ${d.tonight?`<div class="callout blue"><b>Tonight:</b> ${esc(d.tonight)}</div>`:''}</div>`}).join('')}
+function packPanel(){const nights=D.menu.filter(d=>d.pack);return `<div class="callout green" style="margin:0 0 18px">Pack around <b>7:45 pm</b> before he leaves at 8. Everything goes in the insulated cooler with an ice pack. Food has to be easy to eat cold, with one hand, or from the thermos.</div>
+  ${nights.map(d=>`<div class="card ${d.date===today?'today':''}"><div class="card__head"><div class="card__title">${esc(d.label)}</div>${d.date===today?'<span class="badge now">Tonight</span>':''}</div><ul class="checks">${d.pack.map((p,i)=>chk('pack|'+d.date+'|'+i,esc(p))).join('')}</ul>${d.tonight?`<div class="callout blue"><b>Also tonight:</b> ${esc(d.tonight)}</div>`:''}</div>`).join('')}
+  <div class="card"><div class="card__title" style="margin-bottom:8px">Using the thermos (chili nights)</div><ol><li>Fill the thermos with boiling water, put the lid on, and wait 5 minutes.</li><li>Microwave the chili until it's steaming hot all the way through (about 3 min, stirring halfway).</li><li>Pour out the water and fill it with chili right away. It stays hot about 5–6 hours.</li></ol></div>`}
+function prepPanel(){const ids=D.prep.map((_,i)=>'prep|'+i);return `<div class="callout green" style="margin:0 0 18px"><b>When:</b> Sunday Nov 29 (this week's food) and again Sunday Dec 6 (next week's). About 2 hours.</div><div class="card"><div class="card__title" style="margin-bottom:6px">Before you start</div><p class="note">About 2 hours. Set this out first:</p><ul>${D.equipment.map(e=>`<li>${esc(e)}</li>`).join('')}</ul></div>
+  <div class="section-h">Step by step (the clock starts when the oven goes on)</div>${progress(ids)}
+  <div class="card"><ul class="checks">${D.prep.map((s,i)=>chk('prep|'+i,`<span class="chk__time">${esc(s[0])}</span>${esc(s[1])}`)).join('')}</ul></div>
+  <div class="row"><button class="btn" data-clear="prep|">Uncheck all steps</button></div>
+  <div class="section-h">Where everything goes</div><div class="card"><ul>${D.storage.map(s=>`<li>${esc(s)}</li>`).join('')}</ul></div>`}
+function groceryPanel(){const M=groceryModel(),ids=M.flatMap(([,l])=>l.filter(x=>!x.removed).map(x=>x.id));
+  return `<div class="callout green" style="margin:0 0 18px"><b>Shop:</b> Saturday Nov 28 for this week, then again Saturday Dec 5. The list is one week of food.${S.edit?' <b>Editing:</b> remove items with ✕ or add your own at the bottom of each store section.':''}</div>${progress(ids)}${M.map(([c,l])=>{const live=l.filter(x=>!x.removed);
+    return `<div class="card"><div class="store-h">${esc(c)}<span>${live.length} items</span></div><ul class="checks">${l.map(it=>it.removed?(S.edit?`<li class="li-row is-removed"><span class="chk"><span class="box"></span><span class="chk__t">${esc(it.text)}</span></span>${ib(`data-gundo="${esc(it.id)}"`,'Put back',UNDO)}</li>`:''):
+      chk(it.id,esc(it.text)+(it.added?'<i class="dot" title="Added"></i>':''),S.edit?ib(`data-gdel="${esc(it.added?it.k:it.id)}"`,'Remove',X,'ib--x'):'')).join('')}</ul>
+      ${S.edit?`<form class="gadd" data-gadd="${esc(c)}"><input class="in" name="t" placeholder="Add to ${esc(c)}…" aria-label="Add an item to ${esc(c)}" required><button class="btn btn--go">Add</button></form>`:''}</div>`}).join('')}
+  <div class="row"><button class="btn" data-clear="g|">Clear the list for next week</button></div>`}
+function recipesPanel(){return `<p class="note" style="margin-bottom:16px">Portions are listed for each recipe. "Fridge" means eaten within 3–4 days, and the rest goes in the freezer.</p>`+D.recipes.map((r,i)=>`<details class="acc" data-acc="${i}" ${(S.open[i]??i===0)?'open':''}><summary><span><span class="acc__t">${esc(r.name)}</span><span class="acc__s">Makes ${esc(r.makes)} · ${esc(r.time)}</span></span></summary><div class="acc__b">
+  ${r.portion?`<div class="portion">${esc(r.portion)}</div>`:''}<h3>You need</h3><ul>${r.ing.map(x=>`<li>${esc(x)}</li>`).join('')}</ul><h3>Steps</h3><ol>${r.steps.map(x=>`<li>${esc(x)}</li>`).join('')}</ol></div></details>`).join('')}
+function progress(ids){const n=ids.filter(i=>C[i]).length;return `<div class="progress" data-prog="${esc(JSON.stringify(ids))}"><div class="bar"><i style="width:0" data-w="${ids.length?Math.round(100*n/ids.length):0}"></i></div><span class="count">${n} / ${ids.length}</span></div>`}
+function refresh(){$$('[data-prog]').forEach(p=>{const ids=JSON.parse(p.dataset.prog),n=ids.filter(i=>C[i]).length;$('i',p).style.width=(ids.length?Math.round(100*n/ids.length):0)+'%';$('.count',p).textContent=n+' / '+ids.length})}
+const RENDER={week:weekPanel,pack:packPanel,prep:prepPanel,grocery:groceryPanel,recipes:recipesPanel};
+
+/* ---- tabs, scroll memory ---- */
+function render(){const t=RENDER[S.tab]?S.tab:'week';
+  $('#tabs').innerHTML=TABS.map(([k,l])=>`<button class="tab" role="tab" id="tab-${k}" aria-controls="panel" aria-selected="${k===t}" tabindex="${k===t?0:-1}" data-k="${k}">${l}</button>`).join('')+'<span class="tabs__ind" aria-hidden="true"></span>';
+  show(t,true);restoreScroll()}
+function place(instant){const tl=$('#tabs');tl.classList.toggle('is-scrollable',tl.scrollWidth>tl.clientWidth+2);const s=$('#tabs [aria-selected="true"]'),ind=$('#tabs .tabs__ind');if(!s)return;if(instant)ind.style.transition='none';ind.style.width=s.offsetWidth+'px';ind.style.transform=`translateX(${s.offsetLeft}px)`;if(instant){ind.offsetWidth;ind.style.transition=''}}
+function show(t,instant,quiet){S.tab=t;save();$$('#tabs .tab').forEach(b=>{const on=b.dataset.k===t;b.setAttribute('aria-selected',on);b.tabIndex=on?0:-1});place(instant);
+  $('#main').innerHTML=`<section class="panel ${quiet?'panel--quiet':''}" id="panel" role="tabpanel" aria-labelledby="tab-${t}">${RENDER[t]()}</section>`;
+  if(quiet)$$('[data-w]').forEach(i=>{i.style.transition='none';i.style.width=i.dataset.w+'%';i.offsetWidth;i.style.transition=''});
+  else requestAnimationFrame(()=>requestAnimationFrame(()=>$$('[data-w]').forEach(i=>i.style.width=i.dataset.w+'%')));
+  const s=$('#tabs [aria-selected="true"]');s&&!quiet&&s.scrollIntoView({block:'nearest',inline:'center',behavior:instant||reduced?'auto':'smooth'});
+  const f=$('.mform .in,.gadd.is-focus .in');if(f&&editing)f.focus({preventScroll:true})}
+function rerender(){const y=scrollY;show(S.tab,true,true);scrollTo(0,y)}
+let sT=null;addEventListener('scroll',()=>{clearTimeout(sT);const t=S.tab;sT=setTimeout(()=>{S.scroll[t]=Math.round(scrollY);save()},160)},{passive:true});
+function restoreScroll(){const y=S.scroll[S.tab]||0;requestAnimationFrame(()=>requestAnimationFrame(()=>scrollTo(0,y)))}
+let pending=false;
+function remote(){pull();if(editing||document.activeElement&&document.activeElement.matches('.gadd .in')){pending=true;return}rerender();toast('Updated')}
+let tt=null;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('is-on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('is-on'),1600)}
+function setEdit(on){S.edit=on;editing=null;save();const b=$('#editBtn');b.setAttribute('aria-pressed',on);b.querySelector('span').textContent=on?'Done':'Edit';document.body.classList.toggle('is-editing',on);rerender()}
+function closeForm(){editing=null;if(pending){pending=false;pull()}rerender()}
+
+/* ---- events ---- */
+document.addEventListener('click',e=>{const b=e.target.closest('#tabs .tab');if(b){clearTimeout(sT);editing=null;show(b.dataset.k);restoreScroll();return}
+  const q=s=>e.target.closest(s);let x;
+  if(q('#editBtn'))return setEdit(!S.edit);
+  if(x=q('[data-clear]')){if(confirm('Uncheck everything in this list?')){SYNC.putMany(Object.keys(C).filter(k=>k.startsWith(x.dataset.clear)).map(k=>['mcheck',k,null]));pull();rerender()}return}
+  if(x=q('[data-editmeal]')){editing=x.dataset.editmeal;return rerender()}
+  if(x=q('[data-addmeal]')){editing=x.dataset.addmeal;return rerender()}
+  if(q('[data-cancel]'))return closeForm();
+  if(x=q('[data-delmeal]')){const k=x.dataset.delmeal;SYNC.put('medit',k,k.startsWith('menuadd|')?null:{removed:true});pull();rerender();toast('Removed');return}
+  if(x=q('[data-restore]')){SYNC.put('medit',x.dataset.restore,null);pull();rerender();toast('Back to the original');return}
+  if(x=q('[data-gdel]')){const k=x.dataset.gdel;if(k.startsWith('gadd|'))SYNC.put('medit',k,null);else SYNC.put('medit','gdel|'+k,{removed:true});pull();rerender();return}
+  if(x=q('[data-gundo]')){SYNC.put('medit','gdel|'+x.dataset.gundo,null);pull();rerender();return}
+});
+document.addEventListener('submit',e=>{const f=e.target;e.preventDefault();
+  if(f.dataset.mform){const k=f.dataset.mform,v={time:f.time.value.trim(),name:f.name.value.trim(),what:f.what.value.trim()};if(!v.time||!v.name||!v.what)return;
+    if(k.startsWith('new|'))SYNC.put('medit','menuadd|'+k.slice(4)+'|'+newId(),v);else SYNC.put('medit',k,v);editing=null;pull();rerender();toast('Saved');return}
+  if(f.dataset.gadd){const t=f.t.value.trim();if(!t)return;SYNC.put('medit','gadd|'+newId(),{section:f.dataset.gadd,text:t});pull();rerender();const n=$(`.gadd[data-gadd="${CSS.escape(f.dataset.gadd)}"] .in`);n&&n.focus({preventScroll:true});return}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&editing)closeForm()});
+document.addEventListener('focusout',e=>{if(e.target.matches('.gadd .in')&&pending)setTimeout(()=>{if(!document.activeElement.matches('.gadd .in')&&!editing){pending=false;rerender()}},50)});
+document.addEventListener('toggle',e=>{const d=e.target;if(d.matches&&d.matches('details[data-acc]')){S.open[d.dataset.acc]=d.open;save()}},true);
+$('#tabs').addEventListener('keydown',e=>{const tabs=$$('#tabs .tab'),i=tabs.indexOf(document.activeElement);if(i<0)return;let j=null;
+  if(e.key==='ArrowRight')j=(i+1)%tabs.length;if(e.key==='ArrowLeft')j=(i-1+tabs.length)%tabs.length;if(e.key==='Home')j=0;if(e.key==='End')j=tabs.length-1;
+  if(j!==null){e.preventDefault();tabs[j].focus();show(tabs[j].dataset.k)}});
+document.addEventListener('change',e=>{const t=e.target;if(!t.matches('input[data-k]'))return;SYNC.put('mcheck',t.dataset.k,t.checked?Date.now():null);pull();refresh()});
+addEventListener('resize',()=>place(true));
+const h=location.hash.slice(1);if(RENDER[h])S.tab=h;
+document.body.classList.toggle('is-editing',S.edit);$('#editBtn').setAttribute('aria-pressed',S.edit);$('#editBtn span').textContent=S.edit?'Done':'Edit';
+render();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>place(true));
+SchedSync.mountIndicator($('#syncHost'),SYNC);SYNC.init();
+})();
+</script>
+</body>
+</html>
