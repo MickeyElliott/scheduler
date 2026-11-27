@@ -47,12 +47,13 @@ pre["days"].append({"date":"2026-11-25","title":"Kickoff: commit + ask","theme":
   B("19:45","20:00","meal","Pack the cooler & go","meal:shift",["Shift meal + Huel shaker + water"],short="Pack cooler"),
   B("20:30","20:45","app","At briefing: ASK SUPERVISOR for the recommendation letter","app",["Asked in person","Handed over the brag sheet","Agreed due date: Thu Dec 3"],short="Ask Sgt",onshift=True),
   B("23:30","23:50","meal","Shift meal (portable)","meal:shift",["Ate it when calls allowed"],short="Shift meal",onshift=True)]})
-pre["days"].append({"date":"2026-11-26","title":"Thanksgiving","theme":"Walk before the meal, protein first. Set up dry fire safely.","blocks":
+pre["days"].append({"date":"2026-11-26","title":"Thanksgiving","theme":"Wednesday's session counts. Tonight: walk, pull-ups and core, no push repeat. Protein first at dinner.","blocks":
   night_tail("F2",False)+post_shift_sleep()+[
   B("14:45","15:00","meal","Meal 1: light breakfast","meal:shift",["Protein-first, light"],short="Meal 1"),
-  B("15:00","15:45","workout","P2 Turkey Day walk + rep tax","session:P2",["40-min brisk walk","50 squats / 30 push-ups / 20 sit-ups across the day"],short="Turkey walk"),
+
   B("16:00","17:30","meal","Meal 2: Thanksgiving dinner","meal:rules",["Protein first, 1 plate","1 dessert slice","No alcohol before shift"],short="Thanksgiving"),
-  B("18:00","18:20","firearms","Dry-fire setup + baseline times","dry:DF0",["Safety protocol (no live ammo in room)","Baseline draw / reload / tap-rack logged"],short="Dry fire"),
+  B("17:45","18:30","workout","P2 Walk + pull-ups + core (adjusted)","session:P2",["25-min walk + 6 strides","Pull-ups 5 × 3 + dead hangs","Hollow + side plank, mobility"],short="Walk + pull",note="Changed: you already trained Wednesday before shift, so no push-ups or sit-ups today."),
+  B("18:40","19:00","firearms","Dry-fire setup + baseline times","dry:DF0",["Safety protocol (no live ammo in room)","Baseline draw / reload / tap-rack logged"],short="Dry fire"),
   B("19:45","20:00","meal","Pack the cooler & go","meal:shift",["Leftover turkey + veg plate, Huel shaker, water"],short="Pack cooler"),
   B("23:30","23:50","meal","Shift meal: Thanksgiving leftovers (turkey + veg)","meal:shift",["Ate it when calls allowed"],short="Shift meal",onshift=True)]})
 pre["days"].append({"date":"2026-11-27","title":"Prep the prep","theme":"Easy training. Go over the grocery list with your wife.","blocks":

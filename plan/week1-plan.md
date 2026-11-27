@@ -93,7 +93,7 @@ _Start the daily anchors and ask for the rec letter at briefing._
 | 23:30–23:50 | Meals | **Shift meal (portable)** _(→ meal:shift)_ | ☐ Ate it when calls allowed |
 
 #### Thu Nov 26: Thanksgiving
-_Walk before the meal, protein first. Set up dry fire safely._
+_Wednesday's session counts. Tonight: walk, pull-ups and core, no push repeat. Protein first at dinner._
 
 | Time | Track | Block | Checklist |
 |---|---|---|---|
@@ -102,9 +102,9 @@ _Walk before the meal, protein first. Set up dry fire safely._
 | 06:45–07:15 | Sleep/Recovery | **Home: wind down, no food** | ☐ Sunglasses on the drive home<br>☐ Phone on DND, room dark & cool |
 | 07:30–14:30 | Sleep/Recovery | **Day sleep (7 h)** | ☐ Slept 7 h+ (log it) |
 | 14:45–15:00 | Meals | **Meal 1: light breakfast** _(→ meal:shift)_ | ☐ Protein-first, light |
-| 15:00–15:45 | Workouts | **P2 Turkey Day walk + rep tax** _(→ session:P2)_ | ☐ 40-min brisk walk<br>☐ 50 squats / 30 push-ups / 20 sit-ups across the day |
 | 16:00–17:30 | Meals | **Meal 2: Thanksgiving dinner** _(→ meal:rules)_ | ☐ Protein first, 1 plate<br>☐ 1 dessert slice<br>☐ No alcohol before shift |
-| 18:00–18:20 | Firearms | **Dry-fire setup + baseline times** _(→ dry:DF0)_ | ☐ Safety protocol (no live ammo in room)<br>☐ Baseline draw / reload / tap-rack logged |
+| 17:45–18:30 | Workouts | **P2 Walk + pull-ups + core (adjusted)** _(→ session:P2)_ | ☐ 25-min walk + 6 strides<br>☐ Pull-ups 5 × 3 + dead hangs<br>☐ Hollow + side plank, mobility |
+| 18:40–19:00 | Firearms | **Dry-fire setup + baseline times** _(→ dry:DF0)_ | ☐ Safety protocol (no live ammo in room)<br>☐ Baseline draw / reload / tap-rack logged |
 | 19:45–20:00 | Meals | **Pack the cooler & go** _(→ meal:shift)_ | ☐ Leftover turkey + veg plate, Huel shaker, water |
 | 23:30–23:50 | Meals | **Shift meal: Thanksgiving leftovers (turkey + veg)** _(→ meal:shift)_ | ☐ Ate it when calls allowed |
 
@@ -356,12 +356,21 @@ Couch stretch 60 s/side · 90/90 hip switch × 10 · Pigeon 45 s/side · Thoraci
 - Mobility × 5 picks
 > **Scale/notes:** If you're stiff after the shift, swap the jog for a brisk walk.
 
-#### P2: Thanksgiving: Turkey Day walk + rep tax (~45 min · Outdoors/Home)
-**Before the meal**
-- Brisk walk 40 min (family welcome)
-**Rep tax through the day**
-- 50 air squats + 30 push-ups + 20 PAT sit-ups, in any sets
-> **Scale/notes:** Take this seriously, but don't skip family time over it.
+#### P2: Thanksgiving (adjusted): engine + pull + core (~45 min · Outdoors/Home, after dinner settles)
+**Why it changed**
+- You trained Wednesday before shift: push-ups, sit-ups, squat thrusts and Zone 2. Today skips those patterns so Sunday's baseline is fresh.
+**Engine**
+- Brisk walk 25 min (family welcome)
+- Then 6 × 20 s hill or stair strides at ~85%, walk back down to recover
+**Pull + grip**
+- Pull-ups 5 × 3 (band or slow negatives if needed), 2 min rest, stop 2+ reps short of failure
+- Dead hang 2 × max (log the time)
+**Core (no sit-ups)**
+- Hollow hold 3 × 20 s
+- Side plank 2 × 20 s each side
+**Mobility**
+- Hips, T-spine, shoulders: 5 picks, about 8 min
+> **Scale/notes:** Crisp, not crushing. No push-ups, sit-ups or squat thrusts today. Sunday's max-effort baseline matters more.
 
 #### P3: Pre-week: Mobility + Zone 2 (~40 min · Home/Gym)
 **Engine**
@@ -681,6 +690,11 @@ _≈ 2,370 kcal · ≈ 200 P_
 **Frozen**
 - [ ] Mixed berries: 2 lb bag
 - [ ] Green beans: 1 lb bag
+**This weekend only**
+- [ ] Rotisserie chicken: 1 (Sat dinner + Sun lunch)
+- [ ] Wheat bread: 1 loaf (Fri shift sandwich, if needed)
+- [ ] String cheese: 1 pack
+- [ ] Bananas (Sun breakfast)
 **Other**
 - [ ] Huel Black Edition: 7 servings (check supply)
 - [ ] Creatine monohydrate: check supply

@@ -116,18 +116,30 @@ for (const dev of devices.filter(d => !process.env.DEV || d.key === process.env.
   // Study signed out
   await b.tap('[data-tb=study]'); a = await b.ev(AUDIT); ok(`${P}: study (signed out): overflow / targets`, !a.overflow && !a.nSmall, a);
   await b.shot(`${P}-study-signed-out`);
-  // sync popover + code entry state
-  await b.ev(`localStorage.setItem('sched.sentTo',JSON.stringify({e:'you@example.com',t:Date.now()}))`); await b.go('index.html?nosw#view=study');
+  ok(`${P}: Study gate has inline email sign-in`, await b.ev(`!!document.querySelector('#main form[data-gatesignin] input[type=email]')`));
+  ok(`${P}: tab bar has Food`, await b.ev(`!!document.querySelector('[data-tb=food]')`));
+  // fresh open (30+ min since last use) lands on Today
+  await b.ev(`(()=>{addEventListener('visibilitychange',e=>e.stopImmediatePropagation(),true);addEventListener('pagehide',e=>e.stopImmediatePropagation(),true);const s=JSON.parse(localStorage.getItem('vswatprep.v1'));s.ui.view='settings';s.ui.lastOpen=Date.now()-31*60e3;localStorage.setItem('vswatprep.v1',JSON.stringify(s))})()`);
+  await b.go('index.html?nosw');
+  ok(`${P}: fresh open lands on Today`, await b.ev(`JSON.parse(localStorage.getItem('vswatprep.v1')).ui.view==='day'`));
+  // sync popover: email only
+  await b.go('index.html?nosw#view=study');
   for (let i = 0; i < 40 && (await b.ev(`document.querySelector('#syncHost .sync').dataset.mode`)) !== 'signedout'; i++) await sleep(250);
   await b.tap('#syncHost .sync__pill');
-  ok(`${P}: sign-in popover offers code entry`, await b.ev(`!!document.querySelector('.sync__pop input[name=code][autocomplete=one-time-code][inputmode=numeric]')`));
+  ok(`${P}: sign-in popover is email-only (no code, no password)`, await b.ev(`!!document.querySelector('.sync__pop input[type=email]')&&!document.querySelector('.sync__pop input[name=code],.sync__pop input[type=password]')`));
   const pop = await b.ev(`(()=>{const r=document.querySelector('.sync__pop').getBoundingClientRect();return {l:r.left,r:r.right,t:r.top,vw:innerWidth}})()`);
   ok(`${P}: popover fits on screen`, pop.l >= 0 && pop.r <= pop.vw && pop.t >= dev.sat, pop);
   a = await b.ev(AUDIT); ok(`${P}: popover input 16px`, !a.font.length, a);
-  await b.shot(`${P}-sign-in-code`);
-  await b.ev(`localStorage.removeItem('sched.sentTo')`);
+  await b.shot(`${P}-sign-in`);
   // Meals
   await b.go('meals.html?nosw');
+  ok(`${P}: meals opens on Today with amounts`, await b.ev(`document.body.dataset.tab==='today'&&!!document.querySelector('.panel .parts, .panel [class*=part]')`));
+  await b.shot(`${P}-meals-today`);
+  await b.ev(`(()=>{const q=document.getElementById('q');q.value='chicken';q.dispatchEvent(new Event('input',{bubbles:true}))})()`); await sleep(300);
+  ok(`${P}: ingredient search finds matches`, await b.ev(`document.querySelectorAll('.panel mark').length>0`));
+  a = await b.ev(AUDIT); ok(`${P}: meals search: overflow / font`, !a.overflow && !a.font.length, a);
+  await b.shot(`${P}-meals-search`);
+  await b.tap('#qx'); await b.tap('#tab-week'); await sleep(200);
   ok(`${P}: meals bottom tabs`, await b.ev(`(()=>{const n=document.querySelector('nav.tabsbar').getBoundingClientRect();return getComputedStyle(document.querySelector('nav.tabsbar')).position==='fixed'&&Math.abs(n.bottom-innerHeight)<1})()`));
   a = await b.ev(AUDIT); ok(`${P}: meals week: overflow / targets`, !a.overflow && !a.nSmall, a);
   await b.shot(`${P}-meals-week`);
@@ -140,13 +152,17 @@ for (const dev of devices.filter(d => !process.env.DEV || d.key === process.env.
   await b.shot(`${P}-meals-grocery`);
   const cb0 = await b.ev(`document.querySelector('.panel .chk input').checked`); await b.tap('.panel .chk'); const cb1 = await b.ev(`document.querySelector('.panel .chk input').checked`);
   ok(`${P}: grocery checkbox toggles on tap`, cb0 !== cb1); await b.tap('.panel .chk');
-  await b.tap('#tab-pack'); await b.shot(`${P}-meals-pack`);
-  await b.tap('#editBtn'); a = await b.ev(AUDIT); ok(`${P}: meals edit mode targets / inputs`, !a.nSmall && !a.font.length, a); await b.tap('#editBtn');
+  await b.tap('#tab-cook'); await b.shot(`${P}-meals-cook`);
+  await b.tap('#tab-week'); await b.tap('#editBtn'); a = await b.ev(AUDIT); ok(`${P}: meals edit mode targets / inputs`, !a.nSmall && !a.font.length, a); await b.tap('#editBtn');
   // signed-in flashcards (optional)
   if (EMAIL && dev.key !== 'pro-safari') {
     await b.go('index.html?nosw#view=study');
-    await b.ev(`SchedSync.current._debug().client.auth.signInWithPassword({email:${JSON.stringify(EMAIL)},password:${JSON.stringify(PASS)}}).then(r=>r.error&&r.error.message)`);
-    let t0 = Date.now(); while (Date.now() - t0 < 15000 && !(await b.ev(`!!document.querySelector('#main [data-tabs=study]')`))) await sleep(300);
+    // real UI: type just the email in the Study gate, tap Sign in
+    for (let i = 0; i < 40 && !(await b.ev(`!!document.querySelector('#main form[data-gatesignin] input')`)); i++) await sleep(250);
+    await b.ev(`document.querySelector('#main form[data-gatesignin] input').value=${JSON.stringify('  ' + EMAIL.toUpperCase() + ' ')}`);
+    await b.tap('#main form[data-gatesignin] button');
+    let t0 = Date.now(); while (Date.now() - t0 < 20000 && !(await b.ev(`!!document.querySelector('#main .sx-start')&&!document.querySelector('#main .sx-gate')`))) await sleep(300);
+    ok(`${P}: email-only sign-in via the Study form (caps + spaces) loads study`, await b.ev(`!!document.querySelector('#main .sx-start')`));
     await sleep(800); await b.shot(`${P}-signedin-study-today`);
     await b.tap('#main [data-tabs=study] [data-key=cards]'); await sleep(400);
     const startBtn = await b.ev(`(()=>{const x=['new','all','due'].map(k=>document.querySelector('#main [data-sxgo='+k+']')).find(e=>e&&!e.disabled);return x?x.dataset.sxgo:null})()`);

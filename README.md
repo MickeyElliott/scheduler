@@ -5,9 +5,12 @@ A plan and tracker for Valley SWAT selection prep, plus a meal page for the pers
 | Page | Link | For |
 |---|---|---|
 | Tracker | https://mickeyelliott.github.io/scheduler/ | Calendar, day plan, tracks, progress, logs, settings |
-| Meals | https://mickeyelliott.github.io/scheduler/meals.html | Weekly menu, packing list, Sunday prep, groceries, recipes |
+| Meals | https://mickeyelliott.github.io/scheduler/meals.html | Today's meals with amounts, food search, week menu, shopping list, cooking |
 
 ## What it does
+
+- **Opens on Today.** After 30+ minutes away it jumps to today: a "Right now / Up next" card with one Open button, earlier blocks folded away, and meal blocks link to the food page.
+- **Sign-in is just the email.** Tap the dot (or Study → Sign in), type the shared email, tap Sign in. No password, no code, no email. See [SETUP.md](SETUP.md#signing-in-each-phone-once).
 
 - **Remembers where you were.** Each device keeps its own view, tab, week, day, open sections, filters, scroll position and open block.
 - **Syncs between devices** through Supabase: checkmarks, logs, schedule settings, plan edits, grocery and packing checks, and meal edits.
@@ -22,15 +25,15 @@ A plan and tracker for Valley SWAT selection prep, plus a meal page for the pers
 - **Study tab (private).** Policy outlines for FWPD MOS Ch. 4 (rev. 05-18-2026), Ch. 41 and Ch. 46, plus case-law briefs with quizzes and an oral-board section where you fill in your own examples.
   - Flashcards use spaced repetition (Leitner boxes). Patrol quick 5 is a big-button mode for downtime in the car.
   - Scenarios step through each decision point.
-  - Also: a 12-week study map and a "To verify" list.
+  - Study opens on one Start button for due cards; Oral board, the 12-week map and the "To verify" list are under More.
   - Study blocks on the calendar and day view link to the matching sections and cards.
   - The content is **not in this repo**. It lives in Supabase (`study_content`), only the allowlisted login can read it, and it's saved on the device after the first load so it works without signal. Progress syncs like everything else. Signing out removes the saved copy.
 - **iPhone app.** Both pages install to the home screen (Safari → Share → Add to Home Screen) and run full screen, offline too. See [SETUP.md](SETUP.md#iphone-put-it-on-the-home-screen).
-  - Phone layout: bottom tab bar (Today, Week, Study, Tracks, More), a compact header, and 44px+ tap targets.
+  - Phone layout: bottom tab bar (Today, Week, Food, Study, More; Progress, Tracks, Logs and Settings are under More), a compact header, and 44px+ tap targets.
   - The calendar opens as a one-day agenda with a week strip. Swipe left or right to change day, or switch to the week grid.
   - Details and the editor open as bottom sheets; drag them down to close.
   - Flashcards and Patrol quick 5 are full screen. Swipe right for got it, left for missed.
-  - Meal page: bottom tabs, big checkboxes, and grocery section headers that stay at the top while you scroll.
+  - Meal page: opens on Today (each meal with its amounts, what to pack tonight, tomorrow's preview), a search box that finds a food across the shopping list, meals and recipes, bottom tabs (Today, This week, Shop, Cook), big checkboxes, and grocery section headers that stay at the top while you scroll.
 - **Meal page edit mode.** The Edit button lets you change, remove or add meals and add or remove grocery items. Removed items can be put back.
 
 See [SETUP.md](SETUP.md) for the Supabase and sign-in setup.

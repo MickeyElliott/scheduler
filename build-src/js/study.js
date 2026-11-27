@@ -5,13 +5,14 @@
 const STUDY_LS='sched.study.v1';
 let STUDY=null;try{STUDY=JSON.parse(localStorage.getItem(STUDY_LS)||'null')}catch(e){STUDY=null}
 let studyState=STUDY?'ready':'none',studyErr='',studyLoading=false,studyChecked=0,SXI=null;
-const STUDY_TABS=[['today','Today'],['policy','Policy'],['cards','Flashcards'],['scen','Scenarios'],['cases','Case law'],['oral','Oral board'],['plan','12-week plan'],['verify','To verify']];
+const STUDY_TABS=[['today','Today'],['cards','Flashcards'],['scen','Scenarios'],['policy','Policy'],['cases','Case law'],['more','More']];
+const STUDY_MORE=[['oral','Oral board','Practice answers in your own words'],['plan','12-week plan','What to study each week until selection'],['verify','To verify','Gaps to confirm with the department']];
 const SRC_LABEL={'fwpd-ch4':'Ch. 4','fwpd-ch41':'Ch. 41','fwpd-ch46':'Ch. 46','week1-policy':'Week 1 policy','week1-caselaw':'Case law','week2-caselaw-queue':'Case law (wk 2)'};
 const FC_SRC=[['all','All sources'],['fwpd-ch4','FWPD Ch. 4'],['fwpd-ch41','FWPD Ch. 41'],['fwpd-ch46','FWPD Ch. 46'],['week1-policy','Statutes / AG'],['law','Case law']];
 const FC_INT={1:1,2:2,3:4,4:8,5:16};/* Leitner: days until next review per box */
 const SP=k=>SYNC.get('study',k);
 const SPut=(k,v)=>SYNC.put('study',k,v);
-const stTab=()=>STUDY_TABS.some(t=>t[0]===S.ui.studyTab)?S.ui.studyTab:'today';
+const stTab=()=>STUDY_TABS.some(t=>t[0]===S.ui.studyTab)||STUDY_MORE.some(t=>t[0]===S.ui.studyTab)?S.ui.studyTab:'today';
 
 async function loadStudy(force){const db=SYNC.db();if(!db||studyLoading)return;studyLoading=true;
   const had=!!STUDY;if(!had){studyState='loading';studyRefresh()}
@@ -115,17 +116,18 @@ function studyGate(){const sync=SYNC.status(),m=studyState;
   if(m==='error')return `<div class="card sx-gate"><div class="sx-gate__icon">⚠️</div><h2>Couldn't load study materials</h2><p class="muted">${esc(studyErr)}</p><button class="btn btn--primary" data-sxretry>Try again</button></div>`;
   if(m==='empty')return `<div class="card sx-gate"><div class="sx-gate__icon">📭</div><h2>No study materials in the database yet</h2></div>`;
   if(sync.mode==='offline'&&sync.email)return `<div class="card sx-gate"><div class="sx-gate__icon">📡</div><h2>Offline</h2><p class="muted">You're signed in, but the study materials haven't been saved to this device yet. They'll load as soon as you have signal.</p></div>`;
-  return `<div class="card sx-gate"><div class="sx-gate__icon">🔒</div><h2>Sign in to load study materials</h2><p class="muted">Policy outlines, flashcards, scenarios and oral-board prep come from department documents, so they're kept private and only load for your login. After the first load they're saved on this device, so they work in the car without signal.</p><button class="btn btn--primary" data-signin>Sign in to sync</button></div>`}
+  return `<div class="card sx-gate"><div class="sx-gate__icon">🔒</div><h2>Sign in to load study materials</h2><p class="muted">Policy outlines, flashcards, scenarios and oral-board prep come from department documents, so they're kept private and only load for your login. After the first load they're saved on this device, so they work in the car without signal.</p><form class="sx-gateform" data-gatesignin><input class="input" type="email" name="email" required placeholder="Your email" autocomplete="email" autocapitalize="off" spellcheck="false" aria-label="Email"><button class="btn btn--primary" type="submit">Sign in</button></form><p class="faint small sx-gatemsg" aria-live="polite">Just your email. No password or code.</p></div>`}
 
 function sxToday(){const x=SX(),w=curWeek(),done=!!SP('wk|'+w.week),st=deckStats(x.cards),open=x.flags.filter(f=>!SP('flag|'+f.id));
   const d=dayObj(todayIso()),blocks=d?d.blocks.filter(b=>['caselaw','policy'].includes(b.track)&&b.status!=='skipped'):[];
-  return `<div class="grid grid-2">
+  const go=st.due.length?'due':'new';
+  return `<div class="card sx-start"><div class="sx-start__t"><div class="eyebrow">Today's review · about 10 min</div><h2>${st.due.length?`${st.due.length} card${st.due.length>1?'s':''} due`:'Nothing due. Learn 10 new cards'}</h2>${boxBar(st)}</div>
+     <div class="sx-start__b"><button class="btn btn--primary sx-big" data-sxgo="${go}">Start</button><button class="btn sx-big" data-quick5>⚡ Quick 5</button></div></div>
+  <div class="grid grid-2 mt-4">
    <div class="card sx-hero"><div class="eyebrow">Week ${w.week} of ${x.sched.length} · ${esc(fmtRange(w.dates))}</div><h2 class="sx-hero__t">${linkify(w.theme)}</h2><p class="faint small">${esc(w.shift)}</p>${sxList(w.focus)}
      <div class="callout callout--info mt-4"><b>Daily rhythm.</b> ${linkify(w.daily)}</div>
      <label class="check mt-4"><input type="checkbox" data-sxk="wk|${w.week}" ${done?'checked':''}><span class="check__box">${CHECK_SVG}</span><span class="check__text"><b>Week output:</b> ${linkify(w.output)}</span></label></div>
    <div class="stack">
-     <div class="card"><div class="card__title">Flashcards</div><div class="sx-kpis"><div><b>${st.due.length}</b><span>due today</span></div><div><b>${st.fresh.length}</b><span>new</span></div><div><b>${st.box[5]}</b><span>mastered</span></div></div>${boxBar(st)}
-       <div class="row mt-4"><button class="btn btn--primary" data-sxgo="due" ${st.due.length?'':'disabled'}>Review ${st.due.length} due</button><button class="btn" data-sxgo="new">Learn 10 new</button><button class="btn" data-quick5>⚡ Quick 5</button></div></div>
      ${blocks.length?`<div class="card"><div class="card__title">Today's study blocks</div>${blocks.map(b=>`<div class="sx-blk"><button class="sx-blk__t" data-sxblock="${esc(b.bid)}"><span class="mono faint">${b.start}</span> ${esc(b.title)}</button>${studyLinksFor(b)}</div>`).join('')}</div>`:''}
      <div class="card"><div class="card__title">To verify</div><p class="muted small">${open.length} of ${x.flags.length} gaps still open${open.filter(f=>f.severity==='high').length?`, ${open.filter(f=>f.severity==='high').length} high`:''}.</p><button class="btn btn--sm" data-sxtab="verify">Open the list</button></div>
    </div></div>`}
@@ -212,14 +214,14 @@ function sxVerify(){const x=SX(),all=S.ui.flagAll!==false,ord={high:0,medium:1,l
    <ul class="checklist sx-flags">${L.filter(f=>all||!SP('flag|'+f.id)).map(f=>`<li><label class="check"><input type="checkbox" data-sxk="flag|${esc(f.id)}" ${SP('flag|'+f.id)?'checked':''}><span class="check__box">${CHECK_SVG}</span><span class="check__text">${sevTag(f.severity)} ${linkify(f.item)}<span class="sx-rec">${linkify(f.recommendation)}</span></span></label></li>`).join('')||'<li class="empty">All verified.</li>'}</ul>`}
 
 /* ---- view ---- */
-const SXB={today:sxToday,policy:sxPolicy,cards:sxCards,scen:sxScen,cases:sxCases,oral:sxOral,plan:sxPlan,verify:sxVerify};
+const SXB={more:()=>`<div class="more-list">${STUDY_MORE.map(([k,l,d])=>`<button class="more-item" data-sxtab="${k}"><b>${l}</b><span>${d}</span></button>`).join('')}</div>`,today:sxToday,policy:sxPolicy,cards:sxCards,scen:sxScen,cases:sxCases,oral:sxOral,plan:sxPlan,verify:sxVerify};
 function renderStudy(){const tab=stTab();S.ui.studyTab=tab;
   const st=STUDY?deckStats(SX().cards):null,open=STUDY?SX().flags.filter(f=>!SP('flag|'+f.id)).length:0;
   const meta=STUDY?SX().meta.meta||{}:{};
-  const tabs=STUDY_TABS.map(([k,l])=>({key:k,html:esc(l)+(k==='cards'&&st&&st.due.length?`<span class="tab__meta">${st.due.length}</span>`:k==='verify'&&STUDY?`<span class="tab__meta">${open}</span>`:'')}));
+  const tabs=STUDY_TABS.map(([k,l])=>({key:k,html:esc(l)+(k==='cards'&&st&&st.due.length?`<span class="tab__meta">${st.due.length}</span>`:'')}));
   $('#main').innerHTML=`<section class="view sx"><div class="page-head"><div><div class="eyebrow">${STUDY?`Policy · flashcards · scenarios · oral board`:'Private study materials'}</div><h1>Study</h1></div>
     <div class="row">${STUDY?`<span class="faint small sx-offline" title="Saved on this device ${esc((STUDY.at||'').slice(0,10))}">● Saved for offline</span>`:''}<button class="btn sx-q5btn" data-quick5 ${STUDY?'':'disabled'}>⚡ Patrol quick 5</button></div></div>
-    <div class="mb-5 sx-tabsrow">${tabsHtml('study',tabs,tab,{label:'Study sections'})}</div>
+    <div class="mb-5 sx-tabsrow">${tabsHtml('study',tabs,STUDY_MORE.some(t=>t[0]===tab)?'more':tab,{label:'Study sections'})}</div>
     <div class="sx-body" key="${tab}">${STUDY?SXB[tab]():studyGate()}</div></section>`;
   bindTabs($('#main'),(id,k)=>{clearTimeout(scrollT);
     if(id==='study'){S.ui.studyTab=k;fcSess=fcSess&&k==='cards'?fcSess:null;save();renderStudy();restoreScroll()}
@@ -235,6 +237,8 @@ function renderStudy(){const tab=stTab();S.ui.studyTab=tab;
 function studyGo(tab,extra){if($('#drawer').classList.contains('is-open'))closeDrawer(true);Object.assign(S.ui,{studyTab:tab},extra||{});S.ui.scroll['study:'+tab]=0;go('study')}
 function startSess(items,title){fcSess=newSess(items,title);if(!fcSess){toast('Nothing to review');return}studyGo('cards')}
 /* ---- events ---- */
+document.addEventListener('submit',async e=>{const f=e.target.closest&&e.target.closest('[data-gatesignin]');if(!f)return;e.preventDefault();const b=f.querySelector('button'),m=f.parentElement.querySelector('.sx-gatemsg');b.disabled=true;if(m)m.textContent='Signing in…';
+  try{await SYNC.signIn(f.email.value);if(m)m.textContent='Signed in. Loading…'}catch(err){if(m)m.textContent=err.message||'Could not sign in';b.disabled=false}});
 document.addEventListener('click',e=>{const t=e.target;let el;
   if(t.closest('[data-signin]')){e.preventDefault();const p=$('#syncHost .sync__pill');if(p){p.click();scrollTo({top:0,behavior:'smooth'})}return}
   if(t.closest('[data-quick5]')){openQ5();return}

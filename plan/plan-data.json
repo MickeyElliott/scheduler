@@ -227,24 +227,45 @@
     "scale": "If you're stiff after the shift, swap the jog for a brisk walk."
    },
    "P2": {
-    "name": "Thanksgiving: Turkey Day walk + rep tax",
+    "name": "Thanksgiving (adjusted): engine + pull + core",
     "dur": 45,
-    "where": "Outdoors/Home",
+    "where": "Outdoors/Home, after dinner settles",
     "blocks": [
      [
-      "Before the meal",
+      "Why it changed",
       [
-       "Brisk walk 40 min (family welcome)"
+       "You trained Wednesday before shift: push-ups, sit-ups, squat thrusts and Zone 2. Today skips those patterns so Sunday's baseline is fresh."
       ]
      ],
      [
-      "Rep tax through the day",
+      "Engine",
       [
-       "50 air squats + 30 push-ups + 20 PAT sit-ups, in any sets"
+       "Brisk walk 25 min (family welcome)",
+       "Then 6 × 20 s hill or stair strides at ~85%, walk back down to recover"
+      ]
+     ],
+     [
+      "Pull + grip",
+      [
+       "Pull-ups 5 × 3 (band or slow negatives if needed), 2 min rest, stop 2+ reps short of failure",
+       "Dead hang 2 × max (log the time)"
+      ]
+     ],
+     [
+      "Core (no sit-ups)",
+      [
+       "Hollow hold 3 × 20 s",
+       "Side plank 2 × 20 s each side"
+      ]
+     ],
+     [
+      "Mobility",
+      [
+       "Hips, T-spine, shoulders: 5 picks, about 8 min"
       ]
      ]
     ],
-    "scale": "Take this seriously, but don't skip family time over it."
+    "scale": "Crisp, not crushing. No push-ups, sit-ups or squat thrusts today. Sunday's max-effort baseline matters more."
    },
    "P3": {
     "name": "Pre-week: Mobility + Zone 2",
@@ -1035,6 +1056,15 @@
     [
      "Mixed berries: 2 lb bag",
      "Green beans: 1 lb bag"
+    ]
+   ],
+   [
+    "This weekend only",
+    [
+     "Rotisserie chicken: 1 (Sat dinner + Sun lunch)",
+     "Wheat bread: 1 loaf (Fri shift sandwich, if needed)",
+     "String cheese: 1 pack",
+     "Bananas (Sun breakfast)"
     ]
    ],
    [
@@ -1843,6 +1873,127 @@
   "meals_page": {
    "menu": [
     {
+     "date": "2026-11-26",
+     "label": "Thu Nov 26 · Thanksgiving",
+     "type": "shift",
+     "note": "Works tonight. Up ~2:30 pm, dinner with family, short workout after, leaves ~8 pm.",
+     "meals": [
+      [
+       "2:45 pm",
+       "Breakfast (light)",
+       "3-egg scramble + Greek yogurt + berries"
+      ],
+      [
+       "4:00 pm",
+       "Thanksgiving dinner",
+       "Turkey first (2 palms), veg, 1 scoop of one starch, 1 dessert slice"
+      ],
+      [
+       "~11:30 pm",
+       "Shift meal (packed)",
+       "Leftover turkey plate (turkey + veg + a little stuffing or potato)"
+      ],
+      [
+       "~3:00 am",
+       "Shake (packed)",
+       "Huel + creatine"
+      ]
+     ],
+     "pack": [
+      "Leftover turkey plate (8 oz turkey + veg) in a leak-proof container",
+      "Huel powder in a shaker + creatine",
+      "Electrolyte packet + 1 L water bottle",
+      "Apple",
+      "Ice pack in the cooler bag"
+     ]
+    },
+    {
+     "date": "2026-11-27",
+     "label": "Fri Nov 27",
+     "type": "shift",
+     "note": "Works tonight. Easy training day.",
+     "meals": [
+      [
+       "2:45 pm",
+       "Breakfast",
+       "3-egg scramble + Greek yogurt + berries"
+      ],
+      [
+       "4:30 pm",
+       "Dinner",
+       "Leftover turkey + rice + green beans"
+      ],
+      [
+       "~11:30 pm",
+       "Shift meal (packed)",
+       "Turkey sandwich on wheat + apple + string cheese"
+      ],
+      [
+       "~3:00 am",
+       "Shake (packed)",
+       "Huel + creatine"
+      ]
+     ],
+     "pack": [
+      "Turkey sandwich (6 oz turkey, wheat bread)",
+      "Apple + string cheese",
+      "Huel shaker + creatine",
+      "Electrolytes + water bottle",
+      "Ice pack"
+     ]
+    },
+    {
+     "date": "2026-11-28",
+     "label": "Sat Nov 28",
+     "type": "postshift",
+     "note": "Sleeps in after work. Grocery run tonight (Shop tab).",
+     "meals": [
+      [
+       "1:15 pm",
+       "Breakfast",
+       "Egg + egg-white scramble with spinach, oats with berries"
+      ],
+      [
+       "4:30 pm",
+       "Shake",
+       "Huel + creatine"
+      ],
+      [
+       "6:00 pm",
+       "Dinner",
+       "Rotisserie chicken (8 oz) + rice + bagged salad"
+      ]
+     ]
+    },
+    {
+     "date": "2026-11-29",
+     "label": "Sun Nov 29 · Prep day",
+     "type": "off",
+     "note": "Fitness test in the morning, then the 2-hour meal prep (Cook tab).",
+     "meals": [
+      [
+       "9:00 am",
+       "Breakfast (light, before the test)",
+       "Oats + banana + Greek yogurt"
+      ],
+      [
+       "12:20 pm",
+       "Shake",
+       "Huel + creatine"
+      ],
+      [
+       "1:00 pm",
+       "Lunch",
+       "Rotisserie chicken leftovers + rice"
+      ],
+      [
+       "6:30 pm",
+       "Dinner",
+       "Chili-lime chicken + rice + broccoli (fresh from prep)"
+      ]
+     ]
+    },
+    {
      "date": "2026-11-30",
      "label": "Mon Nov 30",
      "type": "off",
@@ -2069,6 +2220,96 @@
      ]
     }
    ],
+   "parts": [
+    [
+     "oats jar",
+     "1 overnight oats jar: 50 g oats · 170 g Greek yogurt · 100 g berries · 1 tbsp chia"
+    ],
+    [
+     "egg bites",
+     "3 egg bites (muffin-tin batch)"
+    ],
+    [
+     "chili-lime chicken",
+     "7 oz chili-lime chicken · 1½ cups rice · big handful of broccoli"
+    ],
+    [
+     "turkey burrito bowl",
+     "1 bowl: heaping cup turkey-bean mix · ¾–1 cup rice · ½ cup green beans"
+    ],
+    [
+     "beef chili|chili in the thermos",
+     "1¾ cups beef & bean chili (fills the thermos)"
+    ],
+    [
+     "salmon",
+     "6 oz salmon fillet"
+    ],
+    [
+     "sweet potato",
+     "1 cup (200 g) roasted sweet potato"
+    ],
+    [
+     "egg-white scramble|egg \\+ egg-white",
+     "3 eggs + 1 cup liquid egg whites · handful of spinach"
+    ],
+    [
+     "3-egg scramble",
+     "3 eggs scrambled"
+    ],
+    [
+     "egg scramble",
+     "3 eggs + 1 cup egg whites scrambled"
+    ],
+    [
+     "oats with berries|oats \\+ berries",
+     "½ cup dry oats (cooked) · ½ cup berries"
+    ],
+    [
+     "oats \\+ banana",
+     "½ cup dry oats · 1 banana"
+    ],
+    [
+     "huel",
+     "1 serving Huel Black + 5 g creatine in ~500 mL water"
+    ],
+    [
+     "greek yogurt \\+ berries|yogurt \\+ berries",
+     "¾ cup Greek yogurt · ½ cup berries"
+    ],
+    [
+     "salad",
+     "2 big handfuls salad mix"
+    ],
+    [
+     "rotisserie",
+     "8 oz rotisserie chicken (about ½ breast + a thigh)"
+    ],
+    [
+     "leftover turkey",
+     "8 oz turkey (2 palms)"
+    ],
+    [
+     "turkey sandwich",
+     "6 oz sliced turkey on 2 slices wheat bread"
+    ],
+    [
+     "\\brice\\b",
+     "about 1 cup cooked rice"
+    ],
+    [
+     "green beans",
+     "1 cup green beans"
+    ],
+    [
+     "apple",
+     "1 apple"
+    ],
+    [
+     "string cheese",
+     "1 string cheese"
+    ]
+   ],
    "prep": [
     [
      "0:00",
@@ -2180,6 +2421,15 @@
      [
       "Mixed berries: 2 lb bag",
       "Green beans: 1 lb bag"
+     ]
+    ],
+    [
+     "This weekend only",
+     [
+      "Rotisserie chicken: 1 (Sat dinner + Sun lunch)",
+      "Wheat bread: 1 loaf (Fri shift sandwich, if needed)",
+      "String cheese: 1 pack",
+      "Bananas (Sun breakfast)"
      ]
     ],
     [
@@ -2619,7 +2869,7 @@
     {
      "date": "2026-11-26",
      "title": "Thanksgiving",
-     "theme": "Walk before the meal, protein first. Set up dry fire safely.",
+     "theme": "Wednesday's session counts. Tonight: walk, pull-ups and core, no push repeat. Protein first at dinner.",
      "blocks": [
       {
        "start": "01:00",
@@ -2720,28 +2970,6 @@
        "id": "2026-11-26|14:45|meal"
       },
       {
-       "start": "15:00",
-       "end": "15:45",
-       "track": "workout",
-       "title": "P2 Turkey Day walk + rep tax",
-       "short": "Turkey walk",
-       "ref": "session:P2",
-       "items": [
-        {
-         "id": "2026-11-26|15:00|workout|0",
-         "text": "40-min brisk walk"
-        },
-        {
-         "id": "2026-11-26|15:00|workout|1",
-         "text": "50 squats / 30 push-ups / 20 sit-ups across the day"
-        }
-       ],
-       "note": null,
-       "flex": false,
-       "onShift": false,
-       "id": "2026-11-26|15:00|workout"
-      },
-      {
        "start": "16:00",
        "end": "17:30",
        "track": "meal",
@@ -2768,26 +2996,52 @@
        "id": "2026-11-26|16:00|meal"
       },
       {
-       "start": "18:00",
-       "end": "18:20",
+       "start": "17:45",
+       "end": "18:30",
+       "track": "workout",
+       "title": "P2 Walk + pull-ups + core (adjusted)",
+       "short": "Walk + pull",
+       "ref": "session:P2",
+       "items": [
+        {
+         "id": "2026-11-26|17:45|workout|0",
+         "text": "25-min walk + 6 strides"
+        },
+        {
+         "id": "2026-11-26|17:45|workout|1",
+         "text": "Pull-ups 5 × 3 + dead hangs"
+        },
+        {
+         "id": "2026-11-26|17:45|workout|2",
+         "text": "Hollow + side plank, mobility"
+        }
+       ],
+       "note": "Changed: you already trained Wednesday before shift, so no push-ups or sit-ups today.",
+       "flex": false,
+       "onShift": false,
+       "id": "2026-11-26|17:45|workout"
+      },
+      {
+       "start": "18:40",
+       "end": "19:00",
        "track": "firearms",
        "title": "Dry-fire setup + baseline times",
        "short": "Dry fire",
        "ref": "dry:DF0",
        "items": [
         {
-         "id": "2026-11-26|18:00|firearms|0",
+         "id": "2026-11-26|18:40|firearms|0",
          "text": "Safety protocol (no live ammo in room)"
         },
         {
-         "id": "2026-11-26|18:00|firearms|1",
+         "id": "2026-11-26|18:40|firearms|1",
          "text": "Baseline draw / reload / tap-rack logged"
         }
        ],
        "note": null,
        "flex": false,
        "onShift": false,
-       "id": "2026-11-26|18:00|firearms"
+       "id": "2026-11-26|18:40|firearms"
       },
       {
        "start": "19:45",

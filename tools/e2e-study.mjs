@@ -37,7 +37,8 @@ const results = []; const ok = (label, cond, info) => { results.push([cond ? 'PA
 const until = async (b, js, ms = 10000) => { const t0 = Date.now(); while (Date.now() - t0 < ms) { const v = await b.ev(js); if (v) return { v, ms: Date.now() - t0 }; await sleep(250); } return null; };
 const status = `document.querySelector('#syncHost .sync').dataset.mode`;
 const signIn = async b => { await b.ev(`SchedSync.current._debug().client.auth.signInWithPassword({email:${JSON.stringify(EMAIL)},password:${JSON.stringify(PASS)}}).then(r=>r.error&&r.error.message)`); return until(b, `${status}==='synced'`, 12000); };
-const tab = async (b, k) => { await b.ev(`document.querySelector('#main [data-tabs=study] [data-key=${k}]').click()`); await sleep(500); };
+const tab = async (b, k) => { await b.ev(`(()=>{const t=document.querySelector('#main [data-tabs=study] [data-key=${k}]');if(t)return t.click();document.querySelector('#main [data-tabs=study] [data-key=more]').click()})()`); await sleep(400);
+  await b.ev(`(()=>{const m=document.querySelector('#main [data-sxtab=${k}]');if(m&&!document.querySelector('#main [data-tabs=study] [data-key=${k}]'))m.click()})()`); await sleep(500); };
 const A = await browser('A', 9351), B = await browser('B', 9352);
 try {
   await A.go('index.html#view=study');

@@ -76,6 +76,7 @@ GROCERY = [
   ["Dairy & eggs", ["Eggs: 2 dozen", "Liquid egg whites: 32 oz carton", "Plain 0% Greek yogurt: 2 × 32 oz tubs", "Reduced-fat shredded cheese: small bag", "Milk (splash for the oats)"]],
   ["Pantry & canned", ["Rolled oats (large canister)", "Jasmine rice: 2 lb bag (4 cups used)", "Black beans: 1 can · Kidney or pinto beans: 2 cans", "Crushed tomatoes: 1 can (28 oz)", "Salsa: 1 jar (16 oz)", "Chia seeds", "Spices: chili powder, cumin, smoked paprika, garlic powder, low-sodium taco seasoning, cinnamon", "Olive oil"]],
   ["Frozen", ["Mixed berries: 2 lb bag", "Green beans: 1 lb bag"]],
+  ["This weekend only", ["Rotisserie chicken: 1 (Sat dinner + Sun lunch)", "Wheat bread: 1 loaf (Fri shift sandwich, if needed)", "String cheese: 1 pack", "Bananas (Sun breakfast)"]],
   ["Other", ["Huel Black Edition: 7 servings (check supply)", "Creatine monohydrate: check supply", "Electrolyte packets: 7", "Leak-proof meal containers (if needed)", "Food thermos 16-24 oz + insulated lunch cooler + ice pack (one-time)"]],
 ]
 
@@ -133,4 +134,55 @@ PREP_STEPS = [
   ["1:40", "Chili done: portion into 6."],
   ["1:50", "Label everything with the DAY it's for. Fridge: 2 chicken (Tue, Wed), 2 turkey (Mon, Tue), 1 chili (Wed), oats, egg bites, Monday's salmon. FREEZER: everything else."],
   ["2:00", "Done. Clean up and refill Huel shakers + creatine for the week."],
+]
+
+# This week, before the first Sunday prep (no prepped containers yet): simple store-bought / leftover meals.
+MENU_PRE = [
+  {"date": "2026-11-26", "label": "Thu Nov 26 · Thanksgiving", "type": "shift", "note": "Works tonight. Up ~2:30 pm, dinner with family, short workout after, leaves ~8 pm.", "meals": [
+    ["2:45 pm", "Breakfast (light)", "3-egg scramble + Greek yogurt + berries"],
+    ["4:00 pm", "Thanksgiving dinner", "Turkey first (2 palms), veg, 1 scoop of one starch, 1 dessert slice"],
+    ["~11:30 pm", "Shift meal (packed)", "Leftover turkey plate (turkey + veg + a little stuffing or potato)"],
+    ["~3:00 am", "Shake (packed)", "Huel + creatine"]],
+   "pack": ["Leftover turkey plate (8 oz turkey + veg) in a leak-proof container", "Huel powder in a shaker + creatine", "Electrolyte packet + 1 L water bottle", "Apple", "Ice pack in the cooler bag"]},
+  {"date": "2026-11-27", "label": "Fri Nov 27", "type": "shift", "note": "Works tonight. Easy training day.", "meals": [
+    ["2:45 pm", "Breakfast", "3-egg scramble + Greek yogurt + berries"],
+    ["4:30 pm", "Dinner", "Leftover turkey + rice + green beans"],
+    ["~11:30 pm", "Shift meal (packed)", "Turkey sandwich on wheat + apple + string cheese"],
+    ["~3:00 am", "Shake (packed)", "Huel + creatine"]],
+   "pack": ["Turkey sandwich (6 oz turkey, wheat bread)", "Apple + string cheese", "Huel shaker + creatine", "Electrolytes + water bottle", "Ice pack"]},
+  {"date": "2026-11-28", "label": "Sat Nov 28", "type": "postshift", "note": "Sleeps in after work. Grocery run tonight (Shop tab).", "meals": [
+    ["1:15 pm", "Breakfast", "Egg + egg-white scramble with spinach, oats with berries"],
+    ["4:30 pm", "Shake", "Huel + creatine"],
+    ["6:00 pm", "Dinner", "Rotisserie chicken (8 oz) + rice + bagged salad"]]},
+  {"date": "2026-11-29", "label": "Sun Nov 29 · Prep day", "type": "off", "note": "Fitness test in the morning, then the 2-hour meal prep (Cook tab).", "meals": [
+    ["9:00 am", "Breakfast (light, before the test)", "Oats + banana + Greek yogurt"],
+    ["12:20 pm", "Shake", "Huel + creatine"],
+    ["1:00 pm", "Lunch", "Rotisserie chicken leftovers + rice"],
+    ["6:30 pm", "Dinner", "Chili-lime chicken + rice + broccoli (fresh from prep)"]]},
+]
+
+# What's actually in each meal, with amounts. First matching rule per group wins; patterns are JS regex (case-insensitive).
+MEAL_PARTS = [
+  ["oats jar", "1 overnight oats jar: 50 g oats · 170 g Greek yogurt · 100 g berries · 1 tbsp chia"],
+  ["egg bites", "3 egg bites (muffin-tin batch)"],
+  ["chili-lime chicken", "7 oz chili-lime chicken · 1½ cups rice · big handful of broccoli"],
+  ["turkey burrito bowl", "1 bowl: heaping cup turkey-bean mix · ¾–1 cup rice · ½ cup green beans"],
+  ["beef chili|chili in the thermos", "1¾ cups beef & bean chili (fills the thermos)"],
+  ["salmon", "6 oz salmon fillet"],
+  ["sweet potato", "1 cup (200 g) roasted sweet potato"],
+  ["egg-white scramble|egg \\+ egg-white", "3 eggs + 1 cup liquid egg whites · handful of spinach"],
+  ["3-egg scramble", "3 eggs scrambled"],
+  ["egg scramble", "3 eggs + 1 cup egg whites scrambled"],
+  ["oats with berries|oats \\+ berries", "½ cup dry oats (cooked) · ½ cup berries"],
+  ["oats \\+ banana", "½ cup dry oats · 1 banana"],
+  ["huel", "1 serving Huel Black + 5 g creatine in ~500 mL water"],
+  ["greek yogurt \\+ berries|yogurt \\+ berries", "¾ cup Greek yogurt · ½ cup berries"],
+  ["salad", "2 big handfuls salad mix"],
+  ["rotisserie", "8 oz rotisserie chicken (about ½ breast + a thigh)"],
+  ["leftover turkey", "8 oz turkey (2 palms)"],
+  ["turkey sandwich", "6 oz sliced turkey on 2 slices wheat bread"],
+  ["\\brice\\b", "about 1 cup cooked rice"],
+  ["green beans", "1 cup green beans"],
+  ["apple", "1 apple"],
+  ["string cheese", "1 string cheese"],
 ]

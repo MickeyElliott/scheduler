@@ -489,6 +489,26 @@ body{overscroll-behavior-y:none;-webkit-tap-highlight-color:transparent}
 .sx-flip[data-swipe="got"] .sx-flip__back{border-color:var(--ok);box-shadow:0 0 0 2px rgba(74,222,128,.35) inset}
 .sx-flip[data-swipe="miss"] .sx-flip__back{border-color:var(--danger);box-shadow:0 0 0 2px rgba(255,107,94,.35) inset}
 .sx-flip{transition:transform .28s var(--ease),opacity .2s}
+
+/* ==== 18. Simplified ==== */
+.nav-link{flex:none;color:var(--text-2);text-decoration:none}
+.now-card{border-left:4px solid var(--c,var(--accent));margin-bottom:var(--s5);background:linear-gradient(135deg,color-mix(in srgb,var(--c,var(--accent)) 10%,var(--surface)),var(--surface))}
+.now-card .eyebrow{color:var(--c,var(--accent))}
+.now-card__t{margin:4px 0 6px;font-size:var(--fs-lg)}
+.now-card__n{margin:0 0 var(--s3)}
+.earlier{margin-bottom:var(--s4);border:1px solid var(--border);border-radius:var(--r-lg);background:var(--surface)}
+.earlier>summary{list-style:none;cursor:pointer;padding:14px 16px;min-height:44px;box-sizing:border-box;color:var(--text-2);font-weight:600;display:flex;align-items:center}
+.earlier>summary::-webkit-details-marker{display:none}
+.earlier>summary::after{content:"";margin-left:auto;width:8px;height:8px;border-right:2px solid var(--text-3);border-bottom:2px solid var(--text-3);transform:rotate(45deg);transition:transform var(--dur)}
+.earlier[open]>summary::after{transform:rotate(225deg)}
+.earlier>.timeline{padding:0 12px 12px;opacity:.75}
+.food-link{display:inline-flex;align-items:center;min-height:44px;margin-top:6px;color:var(--t-meals,#4ade80);font-weight:600;text-decoration:none}
+.sx-start{display:flex;gap:var(--s5);align-items:center;flex-wrap:wrap;border-color:color-mix(in srgb,var(--accent) 40%,var(--border))}
+.sx-start__t{flex:1;min-width:220px}.sx-start__t h2{margin:4px 0 10px}
+.sx-start__b{display:flex;gap:var(--s3);flex:1;min-width:240px}.sx-start__b .btn{flex:1}
+.sx-gateform{display:flex;gap:var(--s2);max-width:420px;margin:var(--s4) auto 0}.sx-gateform .input{flex:1;min-width:0}
+.sx-gatemsg{margin-top:var(--s3)}
+@media (max-width:640px){.day-hero [data-day-ring]{display:none}.day-hero{gap:var(--s3)}.nav-link{display:none}.sx-start{padding:var(--s4)}.sx-start__b .btn{min-height:60px}}
 @media print{.app-header,.scrim,.drawer,.cal-toolbar{display:none!important} body{background:#fff;color:#000}}
 </style>
 </head>
@@ -504,7 +524,7 @@ body{overscroll-behavior-y:none;-webkit-tap-highlight-color:transparent}
       <div id="syncHost" class="sync-host"></div>
     </div>
     <div class="nav-row">
-      <div class="tabs" role="tablist" aria-label="Views" id="nav"></div>
+      <div class="tabs" role="tablist" aria-label="Views" id="nav"></div><a class="btn btn--sm btn--ghost nav-link" href="meals.html">Food</a><button class="btn btn--sm btn--ghost nav-link" data-goview="tracks">Tracks</button><button class="btn btn--sm btn--ghost nav-link" data-goview="logs">Logs</button>
       <span class="spacer"></span>
       <label class="sr-only" for="weekSelect">Week</label>
       <select class="select" id="weekSelect"></select>
@@ -536,8 +556,8 @@ function normalize(s){
   return {v:3,settings:st,checks:s.checks||{},logs:Object.assign(clone(DEFAULTS.logs),s.logs||{}),edits:s.edits||{},mchecks:{},medits:{},ui};
 }
 function load(){try{return normalize(JSON.parse(localStorage.getItem(LS)||'null'))}catch(e){return clone(DEFAULTS)}}
-let S=load();
-const save=()=>{try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}};
+let S=load();const LAST_OPEN=S.ui.lastOpen||0;
+const save=()=>{S.ui.lastOpen=Date.now();try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}};
 
 /* ==== Sync: local cache always; Supabase when config.js is filled ==== */
 const SYNC=window.SchedSync.create({onRemote:changes=>onRemote(changes)});
@@ -687,7 +707,7 @@ const cdShort=ms=>ms<=0?'Passed':Math.floor(ms/864e5)+'d '+Math.floor(ms%864e5/3
 function renderCountdowns(){const n=Date.now();$('#countdowns').innerHTML=`<div class="countdown countdown--due"><span class="countdown__label">App due · Dec 7</span><span class="countdown__value"><span class="cd-l">${cd(DUE-n,true)}</span><span class="cd-s">${cdShort(DUE-n)}</span></span></div><div class="countdown countdown--sel"><span class="countdown__label">Selection · Feb 19</span><span class="countdown__value"><span class="cd-l">${cd(SEL-n,true)}</span><span class="cd-s">${cdShort(SEL-n)}</span></span></div>`;
   const big=$('#bigcd');if(big)big.innerHTML=`<div class="card"><div class="kpi__label">Application due · Mon Dec 7, 09:00 PT</div><div class="kpi__value kpi__value--due">${cd(DUE-n)}</div><div class="faint small">Letter of interest + supervisor rec letter, through the chain of command</div></div><div class="card"><div class="kpi__label">Selection · Fri Feb 19, 2027</div><div class="kpi__value kpi__value--sel">${cd(SEL-n)}</div><div class="faint small">Start time TBD (07:00 placeholder)</div></div>`}
 setInterval(renderCountdowns,1000);
-const VIEWS=[['calendar','Calendar'],['day','Day'],['tracks','Tracks'],['study','Study'],['dash','Progress'],['logs','Logs'],['settings','Settings']];
+const VIEWS=[['day','Today'],['calendar','Week'],['study','Study'],['dash','Progress'],['settings','Settings']];
 function renderHeader(){
   $('#nav').outerHTML=tabsHtml('nav',VIEWS.map(([k,l])=>({key:k,label:l})),S.ui.view,{label:'Views'}).replace('class="tabs ','id="nav" class="tabs ');
   bindTabs($('.nav-row'),(id,k)=>go(k));
@@ -843,17 +863,24 @@ function renderDay(){let date=S.ui.date;if(!dayObj(date)){const t=todayIso();dat
   let h=`<section class="view"><div class="mb-4" style="overflow-x:auto">${tabsHtml('days',tabs,date,{pill:true,label:'Days'})}</div>
   <div class="card day-hero my-5"><div data-day-ring="${date}">${ring(dayPct(d))}</div><div class="day-hero__text"><div class="eyebrow">${DOWL[parseD(date).getDay()]} · ${MON[parseD(date).getMonth()]} ${parseD(date).getDate()} · ${esc(w.label)}</div><h1>${esc(d.title)}</h1><p class="muted" style="margin:0 0 var(--s3)">${esc(d.theme||'')}</p><div class="row">${shiftTag}</div></div>
     <div class="row"><button class="btn" data-addblk="${date}">＋ Add</button><button class="btn" data-nav="${idx-1}" ${idx<=0?'disabled':''} aria-label="Previous day">←</button><button class="btn" data-nav="today">Today</button><button class="btn" data-nav="${idx+1}" ${idx>=days.length-1?'disabled':''} aria-label="Next day">→</button></div></div>
-  ${acc('Daily anchors',checklist(R.daily_anchors.map(a=>check(date+'|anchor|'+a.id,esc(a.text)))),{id:'anchors',sub:`${anchorIds(d).filter(i=>S.checks[i]).length}/${R.daily_anchors.length} done · tap to open`})}
+  <!--NOW-->${acc('Daily anchors',checklist(R.daily_anchors.map(a=>check(date+'|anchor|'+a.id,esc(a.text)))),{id:'anchors',sub:`${anchorIds(d).filter(i=>S.checks[i]).length}/${R.daily_anchors.length} done · tap to open`})}
   ${studyDayCard(date)}
   <h2 class="section-title section-title--spaced">Timeline</h2><div class="timeline">`;
   const cards=d.blocks.map((b,i)=>({b,i,s:toMin(b.start)})).concat(segs.map(([a,z])=>({shift:[a,z],s:a}))).sort((x,y)=>x.s-y.s||(x.shift?-1:1));
-  cards.forEach(({b,i,shift},n)=>{
+  const isT=date===todayIso(),nd=new Date(),nowM=nd.getHours()*60+nd.getMinutes();let hp='',np=0;
+  cards.forEach((c,n)=>{const h0=h.length;tlItem(c,n);const end=c.shift?c.shift[1]:toMin(c.b.end);if(isT&&end<=nowM&&!(c.b&&toMin(c.b.end)<toMin(c.b.start))){hp+=h.slice(h0);h=h.slice(0,h0);np++}});
+  if(np){const tg='<div class="timeline">',k=h.lastIndexOf(tg);h=h.slice(0,k)+`<details class="earlier"><summary>Earlier today · ${np} block${np>1?'s':''}</summary><div class="timeline">${hp}</div></details>`+h.slice(k)}
+  if(isT){const bl=d.blocks.filter(b=>b.status!=='skipped'),cur=bl.filter(b=>toMin(b.start)<=nowM&&nowM<toMin(b.end)).sort((a,b)=>(a.track==='recovery')-(b.track==='recovery'))[0],nxt=bl.find(b=>toMin(b.start)>nowM&&b!==cur);
+    const main=cur||nxt;if(main){const tg='<!--NOW-->',k=h.indexOf(tg);
+      const card=`<div class="card now-card" style="--c:${tcol(main.track)}"><div class="eyebrow">${cur?'Right now':'Up next'} · ${main.start}–${main.end}</div><h2 class="now-card__t">${esc(main.title)}</h2>${main.note?`<p class="muted now-card__n">${esc(main.note)}</p>`:''}<div class="row"><button class="btn btn--primary" data-opennow="${esc(main.bid)}">Open</button>${cur&&nxt?`<span class="faint small">Then ${nxt.start} · ${esc(nxt.short||nxt.title)}</span>`:''}</div></div>`;
+      h=h.slice(0,k)+card+h.slice(k)}}
+  function tlItem({b,i,shift},n){
     if(shift){h+=`<div class="tl-item" style="--i:${n}"><div class="tl-time">${fmtM(shift[0])}<small>${fmtM(shift[1])}</small></div><div class="tl-card tl-card--shift"><div class="row"><b>On shift · patrol${shift[0]===0?` (${DOW[parseD(addD(date,-1)).getDay()]} night, continued)`:''}</b><span class="faint small">${shift[0]===0?'Ends '+fmtM(shift[1]):'Starts '+fmtM(shift[0])}. Only patrol-friendly items below: eat when calls allow, optional flex gym hour.</span></div></div></div>`;return}
     const done=(b.items.length&&blockPct(b)===100)||b.status==='done';
     h+=`<div class="tl-item" style="--i:${n}"><div class="tl-time">${b.start}<small>${b.end}</small></div><div class="tl-card ${b.flex?'tl-card--flex':''} ${done?'is-done':''} ${b.status==='skipped'?'is-skipped':''}" style="--c:${tcol(b.track)}" data-block="${esc(b.bid)}" id="blk-${hash(b.bid)}">
       <div class="tl-card__head"><span class="tl-card__title">${esc(b.title)}</span>${b.flex?'<span class="tag tag--plain" style="--c:var(--text-3)">Optional</span>':''}${toMin(b.start)<toMin(S.settings.shiftEnd)?carryTag(date,b):''}${statusTag(b)}${editedTag(b)}${tag(b.track)}${b.items.length?`<span class="tl-card__count">${b.items.filter(x=>S.checks[x.id]).length}/${b.items.length}</span>`:''}<button class="btn btn--sm btn--ghost tl-card__edit" data-editblk="${esc(b.bid)}" aria-label="Edit ${esc(b.title)}">✎</button></div>
       ${conflicts(date,b)?'<div class="callout callout--warn">Overlaps your configured shift. Move it.</div>':''}${b.note?`<div class="callout ${b.flex?'callout--info':''}">${esc(b.note)}</div>`:''}
-      ${b.items.length?checklist(b.items.map(it=>check(it.id,esc(it.text)))):''}${studyLinksFor(b)}${b.ref?acc('Plan & details',renderRef(b.ref),{cls:'acc--quiet',id:'plan-'+b.bid}):''}</div></div>`});
+      ${b.items.length?checklist(b.items.map(it=>check(it.id,esc(it.text)))):''}${studyLinksFor(b)}${b.ref?acc('Plan & details',renderRef(b.ref),{cls:'acc--quiet',id:'plan-'+b.bid}):''}${b.track==='meal'?'<a class="food-link" href="meals.html">What to eat, with amounts →</a>':''}</div></div>`}
   h+=`</div></section>`;$('#main').innerHTML=h;animateIn($('#main'));
   bindTabs($('#main'),(id,k)=>{if(id==='days')go('day',{date:k})});
   $$('[data-nav]').forEach(el=>el.onclick=()=>{const v=el.dataset.nav;go('day',{date:v==='today'?(dayObj(todayIso())?todayIso():days[0].date):days[+v].date})});
@@ -994,6 +1021,7 @@ function renderSettings(){const s=S.settings;
 /*__STUDY__*/
 /*__MOBILE__*/
 
+document.addEventListener('click',e=>{const b=e.target.closest('[data-opennow]');if(b)return openDrawer(b.dataset.opennow,b);const g=e.target.closest('[data-goview]');if(g)go(g.dataset.goview)});
 /* ==== Router ==== */
 const RENDER={calendar:renderCalendar,day:renderDay,tracks:renderTracks,study:renderStudy,dash:renderDash,logs:renderLogs,settings:renderSettings};
 function syncNav(){renderTabbar();const tl=$('#nav');if(!tl)return;$$('[role=tab]',tl).forEach(t=>{const on=t.dataset.key===S.ui.view;t.setAttribute('aria-selected',on);t.tabIndex=on?0:-1});placeIndicator(tl)}
@@ -1002,6 +1030,7 @@ function render(){renderHeader();renderCountdowns();renderView()}
 (function fromHash(){const p=new URLSearchParams(location.hash.slice(1));['view','date','week','track','logTab'].forEach(k=>{if(p.get(k)!=null)S.ui[k]=p.get(k)});if(p.get('st'))S.ui.studyTab=p.get('st');if(p.get('open')!=null)S.ui.openIdx=p.get('open');
   if(p.get('date')&&!p.get('week')){const d=dayObj(p.get('date'));if(d)S.ui.week=d.week}
   if(!S.ui.date||!dayObj(S.ui.date)){const t=todayIso();S.ui.date=dayObj(t)?t:PLAN.weeks[0].days[0].date}
+  if(!p.get('view')&&Date.now()-LAST_OPEN>30*60e3){const t=todayIso();S.ui.view='day';S.ui.drawer=null;if(dayObj(t)){S.ui.date=t;S.ui.week=dayObj(t).week}}  /* fresh open: start on Today */
   render();restoreScroll();
   SchedSync.mountIndicator($('#syncHost'),SYNC);SYNC.init();
   const bq=p.get('block')||(p.get('view')?null:S.ui.drawer);if(!bq&&S.ui.drawer){S.ui.drawer=null;save()}if(bq)setTimeout(()=>{if(p.get('edit')!=null)openEditor(bq);else openDrawer(bq)},60);

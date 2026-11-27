@@ -13,13 +13,15 @@ const IC={day:'<path d="M4 6h16M4 6v13a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V6M8 3v5M16
   calendar:'<path d="M4 5h16v15H4zM4 10h16M9 5v15M15 5v15"/>',
   study:'<path d="M3 7l9-4 9 4-9 4zM7 9v5c0 1.7 2.2 3 5 3s5-1.3 5-3V9M21 7v6"/>',
   tracks:'<path d="M4 18V9M10 18V5M16 18v-7M22 18H2"/>',
+  food:'<path d="M7 3v8M5 3v4a2 2 0 0 0 4 0V3M7 11v10M17 3c-2 1-3 3.5-3 7h3v11"/>',
   more:'<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>'};
-const TABBAR=[['day','Today'],['calendar','Week'],['study','Study'],['tracks','Tracks'],['more','More']];
-const MORE=[['dash','Progress','Streaks, % by track and week'],['logs','Logs','Workouts, range and weights'],['settings','Settings','Shift, units and sync']];
+const TABBAR=[['day','Today'],['calendar','Week'],['food','Food'],['study','Study'],['more','More']];
+const MORE=[['dash','Progress','Streaks, % by track and week'],['tracks','Tracks','Everything for one area: workouts, firearms, case law…'],['logs','Logs','Workouts, range and weights'],['settings','Settings','Shift, units and sync']];
 function renderTabbar(){if(S.ui.view!=='study')$$('body>.sx-sesscard').forEach(e=>e.remove());const tb=$('#tabbar');if(!tb)return;
   if(!tb.firstChild){tb.innerHTML=TABBAR.map(([k,l])=>`<button class="tabbar__b" data-tb="${k}" type="button"><svg viewBox="0 0 24 24" aria-hidden="true">${IC[k]}</svg><span>${l}</span></button>`).join('');
     tb.addEventListener('click',e=>{const b=e.target.closest('[data-tb]');if(!b)return;const k=b.dataset.tb;buzz(6);
       if(k==='more')return openMore();
+      if(k==='food'){location.href='meals.html';return}
       if(k==='day'){const t=todayIso();if(S.ui.view==='day'&&dayObj(t))return go('day',{date:t});return go('day')}
       if(k===S.ui.view){scrollTo({top:0,behavior:reduceMotion()?'auto':'smooth'});return}go(k)})}
   const cur=MORE.some(m=>m[0]===S.ui.view)?'more':S.ui.view;
@@ -28,7 +30,7 @@ function renderTabbar(){if(S.ui.view!=='study')$$('body>.sx-sesscard').forEach(e
 function openMore(){lastFocus=document.activeElement;
   const dr=mountDrawer(`<div class="drawer__inner"><div class="drawer__head"><div style="flex:1"><h2 id="drawerTitle">More</h2></div><button class="btn btn--icon" data-close aria-label="Close">✕</button></div>
     <div class="drawer__body"><div class="more-list">${MORE.map(([k,l,s])=>`<button class="more-item ${S.ui.view===k?'is-on':''}" data-more="${k}"><b>${l}</b><span>${s}</span></button>`).join('')}
-    <a class="more-item" href="meals.html"><b>Meal plan ↗</b><span>The page your wife uses: menu, packing, groceries</span></a></div></div></div>`,'more');
+</div></div></div>`,'more');
   $$('[data-more]',dr).forEach(b=>b.onclick=()=>{closeDrawer(true);go(b.dataset.more)});setTimeout(()=>{const f=$('[data-close]',dr);f&&f.focus({preventScroll:true})},60)}
 
 /* phone: a running flashcard session goes full screen at body level (outside animated/contained ancestors) */
@@ -102,6 +104,9 @@ function swipeable(){return (S.ui.view==='day'&&isPhone())||(S.ui.view==='calend
     c.style.transform=`translateX(${dx>0?120:-120}vw) rotate(${dx>0?18:-18}deg)`;c.style.opacity='0';setTimeout(()=>btn&&btn.click(),190)};
   document.addEventListener('touchend',end);document.addEventListener('touchcancel',()=>{if(card){card.style.transform='';card.style.transition='';card=null}})})();
 
+/* back after 30+ min (home-screen app resumes instead of reloading): jump to Today */
+document.addEventListener('visibilitychange',()=>{if(document.hidden){save();return}
+  if(Date.now()-(S.ui.lastOpen||0)>30*60e3&&!$('#drawer').classList.contains('is-open')&&!$('#q5')&&!$('body>.sx-sesscard')){const t=todayIso();go('day',dayObj(t)?{date:t,week:dayObj(t).week}:{})}});
 /* ---- offline app shell ---- */
 if('serviceWorker' in navigator&&!/[?&]nosw\b/.test(location.search)&&(location.protocol==='https:'||location.hostname==='127.0.0.1'||location.hostname==='localhost'))
   addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));

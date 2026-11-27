@@ -3,7 +3,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 from ref import REF
 from ref2 import REF2
 from weeks import WEEKS
-from meals_data import NUTRITION, RECIPES, GROCERY, MENU, PREP_STEPS
+from meals_data import NUTRITION, RECIPES, GROCERY, MENU, PREP_STEPS, MENU_PRE, MEAL_PARTS
 from v2_overrides import FLEX, LOC, ANCHORS
 from datetime import date
 import copy
@@ -54,12 +54,12 @@ PORTION = {
  "carbs": "Rice: 1½ cups with each chicken dinner, ¾–1 cup in each turkey bowl. Sweet potato: about 1 cup (200 g) with off-day dinners.",
  "salmon": "1 fillet per dinner, with about 1 cup sweet potato and a side salad.",
 }
-_menu = copy.deepcopy(MENU)
+_menu = copy.deepcopy(MENU_PRE + MENU)
 for _d in _menu:
     for _m in _d["meals"]:
         _m[1] = _m[1].replace("Light Meal 3", "Light evening meal")
 MEALS = {
- "menu": _menu, "prep": PREP_STEPS, "grocery": GROCERY,
+ "menu": _menu, "parts": MEAL_PARTS, "prep": PREP_STEPS, "grocery": GROCERY,
  "recipes": [dict({k:v for k,v in r.items() if k!="macro"}, portion=PORTION.get(r["id"],"")) for r in RECIPES],
  "equipment": ["4 jars with lids (for the oats)", "12-cup muffin tin", "2 sheet pans", "2 pots (one for the chili) + 1 big skillet", "Rice cooker", "About 17 leak-proof containers: 5 for chicken dinners, 6 for turkey bowls, 6 for chili", "Masking tape + marker to label each container with its DAY", "Meat thermometer (chicken is done at 165°F)"],
  "storage": ["FRIDGE: 2 chicken dinners (Tue, Wed), 2 turkey bowls (Mon lunch, Tue work night), 1 chili (Wed work night), 4 oat jars, 12 egg bites, Monday's salmon.",
