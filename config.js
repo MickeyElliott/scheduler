@@ -3,4 +3,6 @@
 window.SCHED_CONFIG = {
   SUPABASE_URL: 'https://clpwvixdvzjvmnsuukbj.supabase.co',
   SUPABASE_ANON_KEY: 'sb_publishable_htREBUp_TWmtSWcqf4Im1Q_RqWmMZl3',
+  // Web Push public key (VAPID). The matching private key is only in Supabase (Vault), never in this repo.
+  VAPID_PUBLIC_KEY: 'BDl-x82qoDPELgv5TjdKrC4z7uHq2aSSDbRjNpwwyPeIcBcBZB2kIi81PRDbaPmvJ0zSsVVt0BtKY0nLEvzWuuI',
 };

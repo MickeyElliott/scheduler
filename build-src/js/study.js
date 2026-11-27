@@ -123,6 +123,7 @@ function sxToday(){const x=SX(),w=curWeek(),done=!!SP('wk|'+w.week),st=deckStats
   const go=st.due.length?'due':'new';
   return `<div class="card sx-start"><div class="sx-start__t"><div class="eyebrow">Today's review · about 10 min</div><h2>${st.due.length?`${st.due.length} card${st.due.length>1?'s':''} due`:'Nothing due. Learn 10 new cards'}</h2>${boxBar(st)}</div>
      <div class="sx-start__b"><button class="btn btn--primary sx-big" data-sxgo="${go}">Start</button><button class="btn sx-big" data-quick5>⚡ Quick 5</button></div></div>
+  <div data-pushbox data-compact></div>
   <div class="grid grid-2 mt-4">
    <div class="card sx-hero"><div class="eyebrow">Week ${w.week} of ${x.sched.length} · ${esc(fmtRange(w.dates))}</div><h2 class="sx-hero__t">${linkify(w.theme)}</h2><p class="faint small">${esc(w.shift)}</p>${sxList(w.focus)}
      <div class="callout callout--info mt-4"><b>Daily rhythm.</b> ${linkify(w.daily)}</div>

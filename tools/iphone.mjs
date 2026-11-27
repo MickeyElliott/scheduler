@@ -112,6 +112,9 @@ for (const dev of devices.filter(d => !process.env.DEV || d.key === process.env.
   await b.tap('[data-more=settings]');
   ok(`${P}: More -> Settings`, await b.ev(`JSON.parse(localStorage.getItem('vswatprep.v1')).ui.view==='settings'&&document.querySelector('[data-tb=more]').classList.contains('is-on')`));
   a = await b.ev(AUDIT); ok(`${P}: settings: inputs 16px+, no overflow`, !a.overflow && !a.font.length, a);
+  await sleep(600);
+  ok(`${P}: reminders card in Settings explains the next step`, await b.ev(dev.standalone ? `/Sign in first/.test(document.querySelector('[data-pushbox]').innerText)` : `/Add to Home Screen/.test(document.querySelector('[data-pushbox]').innerText)`));
+  await b.shot(`${P}-settings-reminders`);
   await b.shot(`${P}-settings`);
   // Study signed out
   await b.tap('[data-tb=study]'); a = await b.ev(AUDIT); ok(`${P}: study (signed out): overflow / targets`, !a.overflow && !a.nSmall, a);
@@ -164,6 +167,8 @@ for (const dev of devices.filter(d => !process.env.DEV || d.key === process.env.
     let t0 = Date.now(); while (Date.now() - t0 < 20000 && !(await b.ev(`!!document.querySelector('#main .sx-start')&&!document.querySelector('#main .sx-gate')`))) await sleep(300);
     ok(`${P}: email-only sign-in via the Study form (caps + spaces) loads study`, await b.ev(`!!document.querySelector('#main .sx-start')`));
     await sleep(800); await b.shot(`${P}-signedin-study-today`);
+    ok(`${P}: Study shows the small reminders prompt with a 44px+ Enable button`, await b.ev(`(()=>{const e=document.querySelector('[data-pushbox][data-compact] [data-push=enable]');return !!e&&e.getBoundingClientRect().height>=44})()`));
+    await b.shot(`${P}-signedin-study-reminder-prompt`);
     await b.tap('#main [data-tabs=study] [data-key=cards]'); await sleep(400);
     const startBtn = await b.ev(`(()=>{const x=['new','all','due'].map(k=>document.querySelector('#main [data-sxgo='+k+']')).find(e=>e&&!e.disabled);return x?x.dataset.sxgo:null})()`);
     if (startBtn) await b.tap(`#main [data-sxgo=${startBtn}]`); await sleep(400);

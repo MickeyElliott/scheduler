@@ -28,6 +28,7 @@ A plan and tracker for Valley SWAT selection prep, plus a meal page for the pers
   - Study opens on one Start button for due cards; Oral board, the 12-week map and the "To verify" list are under More.
   - Study blocks on the calendar and day view link to the matching sections and cards.
   - The content is **not in this repo**. It lives in Supabase (`study_content`), only the allowlisted login can read it, and it's saved on the device after the first load so it works without signal. Progress syncs like everything else. Signing out removes the saved copy.
+- **Study reminders.** Optional daily push notification on iPhone (home-screen app, iOS 16.4+): how many cards are due and what to drill. Turn it on under More → Settings → Study reminders; default 7:00 PM Pacific, changeable. See [SETUP.md](SETUP.md#study-reminders-push-notifications).
 - **iPhone app.** Both pages install to the home screen (Safari → Share → Add to Home Screen) and run full screen, offline too. See [SETUP.md](SETUP.md#iphone-put-it-on-the-home-screen).
   - Phone layout: bottom tab bar (Today, Week, Food, Study, More; Progress, Tracks, Logs and Settings are under More), a compact header, and 44px+ tap targets.
   - The calendar opens as a one-day agenda with a week strip. Swipe left or right to change day, or switch to the week grid.

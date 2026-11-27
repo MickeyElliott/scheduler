@@ -16,7 +16,7 @@ const IC={day:'<path d="M4 6h16M4 6v13a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V6M8 3v5M16
   food:'<path d="M7 3v8M5 3v4a2 2 0 0 0 4 0V3M7 11v10M17 3c-2 1-3 3.5-3 7h3v11"/>',
   more:'<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>'};
 const TABBAR=[['day','Today'],['calendar','Week'],['food','Food'],['study','Study'],['more','More']];
-const MORE=[['dash','Progress','Streaks, % by track and week'],['tracks','Tracks','Everything for one area: workouts, firearms, case law…'],['logs','Logs','Workouts, range and weights'],['settings','Settings','Shift, units and sync']];
+const MORE=[['dash','Progress','Streaks, % by track and week'],['tracks','Tracks','Everything for one area: workouts, firearms, case law…'],['logs','Logs','Workouts, range and weights'],['settings','Settings','Study reminders, shift and sync']];
 function renderTabbar(){if(S.ui.view!=='study')$$('body>.sx-sesscard').forEach(e=>e.remove());const tb=$('#tabbar');if(!tb)return;
   if(!tb.firstChild){tb.innerHTML=TABBAR.map(([k,l])=>`<button class="tabbar__b" data-tb="${k}" type="button"><svg viewBox="0 0 24 24" aria-hidden="true">${IC[k]}</svg><span>${l}</span></button>`).join('');
     tb.addEventListener('click',e=>{const b=e.target.closest('[data-tb]');if(!b)return;const k=b.dataset.tb;buzz(6);

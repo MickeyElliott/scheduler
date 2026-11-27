@@ -58,6 +58,25 @@ Good to know:
 
 Optional: **Auth → Sign In / Providers → turn off "Allow new users to sign up"**. Only allowlisted emails can see data anyway; this just stops strangers creating empty accounts.
 
+## Study reminders (push notifications)
+
+Daily push notification from the SWAT Prep app: "N cards due" plus a case, policy or oral-board topic to drill. Tap it to open Study.
+
+**Turn it on (iPhone, iOS 16.4+):**
+1. The app must be on the home screen (see above). Notifications don't work from a normal Safari tab.
+2. Open **SWAT Prep** from its icon and sign in (dot → email → Sign in).
+3. Go to **More → Settings → Study reminders** (or tap **Enable reminders** on the prompt under Start on the Study page).
+4. Pick the time (default **7:00 PM Pacific**, before the 8:30 PM shift; change it any time) and tap **Enable reminders**. Tap **Allow** on the iPhone prompt.
+5. Tap **Send test**. A notification should arrive within seconds.
+
+Change the time with the picker, pause with the switch, or **Remove from this device**. Each phone has its own setting. If you tapped Don't Allow: iPhone **Settings → Notifications → SWAT Prep → Allow Notifications**.
+
+**How it works (already deployed; nothing to do):**
+- `supabase/push.sql` creates `push_subscriptions` (household RLS: only allowlisted logins can read or change rows) and the 15-minute `pg_cron` job.
+- `supabase/functions/push-reminders/index.ts` is the Edge Function. Every 15 minutes it finds subscriptions whose reminder time (Pacific) has arrived and that haven't had one today, builds the text from `study_content` and your synced flashcard progress, and sends it with Web Push. Expired subscriptions (HTTP 404/410) are deleted. It skips a reminder that is more than 3 hours late.
+- The **public** VAPID key is in `config.js`. The **private** VAPID key and the cron secret are only in Supabase **Vault** (`vapid_private_key`, `vapid_public_key`, `push_cron_secret`); they are not in this repo. To move the private key to Edge Function secrets instead, set `VAPID_PRIVATE_KEY` (and `VAPID_PUBLIC_KEY`) under Edge Functions → Secrets; the function prefers those when present.
+- To rotate keys: generate a new pair, update the two Vault secrets and `VAPID_PUBLIC_KEY` in `config.js`, then each phone taps **Remove from this device** and **Enable reminders** again.
+
 ## Allowing another email
 
 Run this in the SQL editor (replace the email in all three places, lowercase):
@@ -84,6 +103,7 @@ Edit the files in `build-src/`, then run `python3 build-src/build.py` and commit
 
 Tests:
 - `node tools/shoot.mjs '<json>'` takes screenshots.
+- `tools/e2e-push.mjs` signs in as a throwaway login in headless Chrome, subscribes through the real push service, sends a test and a scheduled reminder through the Edge Function and checks that the service worker shows them (needs `E2E_EMAIL` and `CRON_SECRET`; delete the test user and household afterwards).
 - `tools/e2e-sync.mjs` runs two headless browsers as two devices. It needs a throwaway test login and household, so delete them afterwards.
 - `OUT=/some/dir node tools/iphone.mjs` emulates iPhone 15/16 Pro and SE (Safari and home-screen mode, with safe-area insets and touch gestures) and checks layout, tap sizes, swipes, the bottom sheets and zero JS errors. With `E2E_EMAIL` (a throwaway allowlisted login) it also signs in through the Study form and tests the flashcards; keep those screenshots out of the repo.
 - `python3 tools/make-icons.py` regenerates the home-screen icons in `icons/`.

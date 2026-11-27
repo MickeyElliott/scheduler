@@ -35,3 +35,22 @@ self.addEventListener('fetch', e => {
   }
   /* everything else (Supabase REST/auth/realtime) goes straight to the network */
 });
+
+/* ---- Web Push: study reminders ---- */
+self.addEventListener('push', e => {
+  let d = {}; try { d = e.data ? e.data.json() : {}; } catch (_) { try { d = { body: e.data.text() }; } catch (__) {} }
+  /* iOS requires every push to show a notification, so always show one, even if the payload is odd */
+  e.waitUntil(self.registration.showNotification(d.title || 'Time to drill', {
+    body: d.body || 'Open Study and tap Start.', tag: d.tag || 'drill', renotify: true,
+    icon: './icons/app-192.png', badge: './icons/app-192.png', data: { url: d.url || 'index.html#view=study' },
+  }));
+});
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  const url = new URL((e.notification.data && e.notification.data.url) || 'index.html#view=study', self.registration.scope).href;
+  e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+    const c = list.find(w => new URL(w.url).pathname === new URL(url).pathname);
+    if (c) { c.postMessage({ type: 'open-study' }); return c.focus(); }
+    return self.clients.openWindow(url);
+  }));
+});

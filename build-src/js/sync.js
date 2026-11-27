@@ -188,6 +188,7 @@
       },
       async signOut() { if (sb) await sb.auth.signOut(); },
       async syncNow() { if (sb && hid) { await pull(true); await flush(); } },
+      ctx: () => (sb && hid ? { hid, email: status.email } : null),
       db: () => (sb && hid ? sb : null),   /* signed-in + allowlisted client, else null */
       _debug: () => ({ hid, cache: readCache(), client: sb }),
     };
