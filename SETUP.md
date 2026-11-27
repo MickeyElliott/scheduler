@@ -49,6 +49,11 @@ Meal page (on your wife's phone):
 2. **Share → Add to Home Screen → Add**. It installs as "Meals" with its own icon and opens straight to today's meals.
 3. Sign in inside it the same way if she wants checkmarks to sync.
 
+Daily Study (study app, no login):
+1. Open `https://mickeyelliott.github.io/scheduler/study/` in Safari and wait for Today to show. That first load saves everything for offline use.
+2. **Share → Add to Home Screen**. Leave **Open as Web App** on if it's shown, keep the name "Daily Study" and tap **Add**.
+3. Open **Daily Study** from the home screen. There's nothing to sign in to. Study in the home-screen app, not the Safari tab: progress is saved inside whichever one you use, and the two don't share it.
+
 Good to know:
 - The home-screen app has its **own storage**, separate from Safari: its own sign-in, saved study copy and screen state. So sign in once in each. Deleting the icon deletes that storage.
 - It works without signal after the first open (the page shell is cached; study content is in the app's local storage after the first signed-in load). Changes made offline upload later.
@@ -106,4 +111,6 @@ Tests:
 - `tools/e2e-push.mjs` signs in as a throwaway login in headless Chrome, subscribes through the real push service, sends a test and a scheduled reminder through the Edge Function and checks that the service worker shows them (needs `E2E_EMAIL` and `CRON_SECRET`; delete the test user and household afterwards).
 - `tools/e2e-sync.mjs` runs two headless browsers as two devices. It needs a throwaway test login and household, so delete them afterwards.
 - `OUT=/some/dir node tools/iphone.mjs` emulates iPhone 15/16 Pro and SE (Safari and home-screen mode, with safe-area insets and touch gestures) and checks layout, tap sizes, swipes, the bottom sheets and zero JS errors. With `E2E_EMAIL` (a throwaway allowlisted login) it also signs in through the Study form and tests the flashcards; keep those screenshots out of the repo.
-- `python3 tools/make-icons.py` regenerates the home-screen icons in `icons/`.
+- `OUT=/some/dir node tools/iphone-study.mjs` runs the same iPhone checks on the Daily Study app, with no login needed. It covers today's to-do, the card session (tap to flip, buttons, swipes both ways), the streak after a reload, Quick 5, search, the MOS reader and its incomplete flags, the RCW and case pages, scenarios, oral board, the manifest and icons, an offline start, layout and zero JS errors.
+- `python3 build-src/build_study.py` rebuilds `study/`. It needs the private MOS extracts in `$STUDY_SRC`.
+- `python3 tools/make-icons.py [app|meals|study]` regenerates the home-screen icons in `icons/`. With no argument it does all of them.

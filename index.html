@@ -401,6 +401,9 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.5}
   .milestone{grid-template-columns:1fr;gap:2px}
 }
 
+.ds-link{display:flex;align-items:center;gap:14px;margin:0 0 var(--s5);padding:14px 16px;min-height:64px;border-radius:var(--r-lg);border:1px solid rgba(96,165,250,.28);background:radial-gradient(420px 160px at 100% 0,rgba(96,165,250,.14),transparent 70%),var(--surface);color:var(--text);text-decoration:none;transition:border-color var(--dur),transform .12s}
+.ds-link:hover{border-color:rgba(96,165,250,.5)} .ds-link:active{transform:scale(.99)}
+.ds-link__i{font-size:26px;line-height:1} .ds-link__b{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px} .ds-link__b span{font-size:var(--fs-sm);color:var(--text-2)} .ds-link__go{color:var(--t-caselaw);font-weight:700;font-size:18px}
 /* ==== 17. iPhone / touch ==== */
 :root{--sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px);--sal:env(safe-area-inset-left,0px);--sar:env(safe-area-inset-right,0px);--tabbar-h:58px}
 html{background:var(--bg);overscroll-behavior-y:none;-webkit-text-size-adjust:100%;text-size-adjust:100%}
@@ -1512,6 +1515,7 @@ function renderStudy(){const tab=stTab();S.ui.studyTab=tab;
   const tabs=STUDY_TABS.map(([k,l])=>({key:k,html:esc(l)+(k==='cards'&&st&&st.due.length?`<span class="tab__meta">${st.due.length}<\/span>`:'')}));
   $('#main').innerHTML=`<section class="view sx"><div class="page-head"><div><div class="eyebrow">${STUDY?`Policy · flashcards · scenarios · oral board`:'Private study materials'}<\/div><h1>Study<\/h1><\/div>
     <div class="row">${STUDY?`<span class="faint small sx-offline" title="Saved on this device ${esc((STUDY.at||'').slice(0,10))}">● Saved for offline<\/span>`:''}<button class="btn sx-q5btn" data-quick5 ${STUDY?'':'disabled'}>⚡ Patrol quick 5<\/button><\/div><\/div>
+    <a class="ds-link" href="study/" data-dslink><span class="ds-link__i" aria-hidden="true">📘<\/span><span class="ds-link__b"><b>Daily Study app<\/b><span>Daily MOS, case law and RCW drills. Exact MOS text, no login. Add it to your Home Screen.<\/span><\/span><span class="ds-link__go" aria-hidden="true">→<\/span><\/a>
     <div class="mb-5 sx-tabsrow">${tabsHtml('study',tabs,STUDY_MORE.some(t=>t[0]===tab)?'more':tab,{label:'Study sections'})}<\/div>
     <div class="sx-body" key="${tab}">${STUDY?SXB[tab]():studyGate()}<\/div><\/section>`;
   bindTabs($('#main'),(id,k)=>{clearTimeout(scrollT);

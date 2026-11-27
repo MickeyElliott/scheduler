@@ -1,0 +1,470 @@
+/* Daily Study — standalone, no login. Progress lives in this device's localStorage only. */
+(function () {
+'use strict';
+const LS = 'dailystudy.v1';
+const FC_INT = { 1: 1, 2: 2, 3: 4, 4: 8, 5: 16 };
+const PILLAR = { mos: 'MOS', case: 'Case law', rcw: 'RCW' };
+const $ = (s, r = document) => r.querySelector(s);
+const app = $('#app');
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const pad = n => String(n).padStart(2, '0');
+const ymd = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const today = () => ymd(new Date());
+const addDays = (s, n) => { const d = new Date(s + 'T12:00:00'); d.setDate(d.getDate() + n); return ymd(d); };
+const dayNo = s => Math.round(Date.parse(s + 'T12:00:00Z') / 864e5);
+const CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+const CHEV = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>';
+const SEARCH = '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>';
+
+/* ---------- state ---------- */
+function blank() { return { v: 1, fc: {}, days: {}, read: {}, sc: {}, oral: {}, sess: null, set: { newPerDay: 6 }, ui: { lib: 'mos' } }; }
+let S;
+try { S = Object.assign(blank(), JSON.parse(localStorage.getItem(LS) || 'null') || {}); } catch (_) { S = blank(); }
+S.set = Object.assign({ newPerDay: 6 }, S.set || {}); S.ui = Object.assign({ lib: 'mos' }, S.ui || {});
+let saveOk = true;
+function save() { try { localStorage.setItem(LS, JSON.stringify(S)); saveOk = true; } catch (_) { if (saveOk) toast('Could not save progress on this device'); saveOk = false; } }
+const dayRec = (d = today()) => (S.days[d] = S.days[d] || { done: {}, n: 0, ok: 0 });
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('on'), 1800); }
+
+/* ---------- data ---------- */
+let D = null; const IX = {};
+function index() {
+  IX.card = new Map(D.cards.map(c => [c.id, c]));
+  IX.sec = new Map(); IX.secCh = new Map(); IX.secOrder = [];
+  D.mos.forEach(ch => ch.sections.forEach(s => { IX.sec.set(s.num, s); IX.secCh.set(s.num, ch); IX.secOrder.push(s.num); }));
+  IX.pt = new Map(D.points.map(p => [p.id, p]));
+  IX.case = new Map(D.cases.map(c => [c.id, c]));
+  IX.rcw = new Map(D.rcw.map(r => [r.cite, r]));
+  IX.scn = new Map(D.scenarios.map(s => [s.id, s]));
+  IX.oral = new Map(D.oral.map(o => [o.id, o]));
+  IX.studied = IX.secOrder.filter(n => (IX.sec.get(n).pts || []).length && IX.sec.get(n).paras.length);
+  IX.cardsFor = { sec: new Map(), rcw: new Map(), case: new Map() };
+  D.cards.forEach(c => { if (!c.link) return; const m = c.p === 'mos' ? IX.cardsFor.sec : c.p === 'rcw' ? IX.cardsFor.rcw : IX.cardsFor.case; (m.get(c.link) || m.set(c.link, []).get(c.link)).push(c.id); });
+}
+
+/* ---------- scheduling ---------- */
+const st = id => S.fc[id];
+const isDue = (id, t = today()) => { const s = st(id); return s && s.due <= t; };
+function dueIds(t = today()) { return D.cards.filter(c => isDue(c.id, t)).sort((a, b) => (st(a.id).due < st(b.id).due ? -1 : st(a.id).due > st(b.id).due ? 1 : st(a.id).b - st(b.id).b)).map(c => c.id); }
+function newIds(n) {
+  const by = { mos: [], case: [], rcw: [] };
+  D.cards.forEach(c => { if (!st(c.id)) by[c.p].push(c.id); });
+  const out = []; const keys = ['mos', 'rcw', 'case']; let i = 0;
+  while (out.length < n && keys.some(k => by[k].length)) { const k = keys[i++ % 3]; if (by[k].length) out.push(by[k].shift()); }
+  return out;
+}
+function interleave(ids) {
+  const by = { mos: [], case: [], rcw: [] }; ids.forEach(id => by[IX.card.get(id).p].push(id));
+  const out = []; const keys = ['mos', 'rcw', 'case']; let i = 0;
+  while (out.length < ids.length) { const k = keys[i++ % 3]; if (by[k].length) out.push(by[k].shift()); }
+  return out;
+}
+function todayPlan() {
+  const t = today();
+  if (S.sess && S.sess.kind === 'daily' && S.sess.date === t) return S.sess;
+  const due = dueIds(t).slice(0, 30), fresh = newIds(S.set.newPerDay);
+  return { kind: 'daily', date: t, queue: interleave(due.concat(fresh)), total: due.length + fresh.length, nDue: due.length, nNew: fresh.length, done: 0, ok: 0, miss: 0, again: [] };
+}
+function quickIds() {
+  const seen = D.cards.filter(c => st(c.id)).map(c => c.id);
+  seen.sort((a, b) => (isDue(b) - isDue(a)) || (st(a).b - st(b).b) || (st(a).last < st(b).last ? -1 : 1));
+  const out = seen.slice(0, 5); if (out.length < 5) out.push(...newIds(5 - out.length));
+  return out;
+}
+function grade(id, ok) {
+  const t = today(); const s = S.fc[id] || { b: 0, n: 0, ok: 0, miss: 0 };
+  s.b = ok ? Math.min(5, (s.b || 0) + 1) : 1; s.due = addDays(t, FC_INT[s.b]); s.n++; ok ? s.ok++ : s.miss++; s.last = t;
+  S.fc[id] = s; const d = dayRec(t); d.n++; if (ok) d.ok++;
+}
+function picks(t = today()) {
+  const n = dayNo(t);
+  return { rcw: D.rcw[n % D.rcw.length], case: D.cases[(n * 7) % D.cases.length], sec: IX.sec.get(IX.studied[(n * 5) % IX.studied.length]),
+    extra: n % 2 ? { k: 'scn', o: D.scenarios[Math.floor(n / 2) % D.scenarios.length] } : { k: 'oral', o: D.oral[Math.floor(n / 2) % D.oral.length] } };
+}
+function markDaily(key) { const d = dayRec(); if (!d.done[key]) { d.done[key] = 1; save(); toast('Checked off ✓'); } }
+function studiedOn(d) { const r = S.days[d]; return !!(r && (r.n > 0 || Object.keys(r.done || {}).length)); }
+function streak() { let d = today(), n = 0; if (!studiedOn(d)) d = addDays(d, -1); while (studiedOn(d)) { n++; d = addDays(d, -1); } return n; }
+
+/* ---------- small renderers ---------- */
+const ptag = p => `<span class="tag p-${p}">${PILLAR[p]}</span>`;
+const bar = (pct, c) => `<div class="bar"><i style="width:${Math.round(pct)}%;${c ? `--c:${c}` : ''}"></i></div>`;
+const li = (href, n, t, s, c) => `<a class="li" href="${href}" ${c ? `style="--c:${c}"` : ''}>${n != null ? `<span class="li__n">${n}</span>` : ''}<span class="li__b"><span class="li__t">${t}</span>${s ? `<span class="li__s">${s}</span>` : ''}</span><span class="li__go">${CHEV}</span></a>`;
+const ext = (url, label) => `<a class="btn btn--sm" href="${esc(url)}" target="_blank" rel="noopener">${esc(label)} ↗</a>`;
+function secShort(s) { let t = s.title.split(/:\s|\s\(/)[0]; return t.length > 60 ? t.slice(0, 57).replace(/\s\S*$/, '') + '…' : t; }
+const secLabel = s => s.num === '4.0' ? 'Ch. 4 Philosophy' : 'MOS ' + s.num;
+function cardRefLink(c) { if (!c.link) return ''; if (c.p === 'mos') return `#sec/${c.link}`; if (c.p === 'rcw') return `#rcw/${c.link}`; return IX.case.has(c.link) ? `#case/${c.link}` : ''; }
+
+/* ---------- router ---------- */
+let depth = 0;
+const TOP = { today: 1, practice: 1, lib: 1, me: 1 };
+window.addEventListener('hashchange', () => { depth++; route(); });
+$('#back').addEventListener('click', e => { e.preventDefault(); if (depth > 0 && history.length > 1) { depth -= 2; history.back(); } else location.hash = parentOf(location.hash); });
+function parentOf(h) {
+  const [r, a] = h.replace(/^#/, '').split('/');
+  if (r === 'sec') { const ch = IX.secCh.get(decodeURIComponent(a || '')); return ch ? `#mos/${ch.ch}` : '#lib'; }
+  if (['mos', 'case', 'rcw'].includes(r)) return '#lib';
+  if (['scn', 'oral', 'deck'].includes(r)) return '#practice';
+  return '#today';
+}
+function setHead(title, back) { $('#title').textContent = title; $('#hdr').classList.toggle('has-back', !!back); $('#streakN').textContent = streak(); }
+function setTab(t) { document.querySelectorAll('.tabbar a').forEach(a => { if (a.dataset.tab === t) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); }); }
+function render(html) { app.innerHTML = `<div class="view">${html}</div>`; }
+function route() {
+  if (!D) return;
+  const h = location.hash.replace(/^#/, '') || 'today';
+  const [r, ...rest] = h.split('/'); const arg = decodeURIComponent(rest.join('/') || '');
+  window.scrollTo(0, 0);
+  const V = { today: vToday, session: () => vSession('daily'), quick: () => vSession('quick'), deck: () => vSession('deck', arg), practice: vPractice, lib: () => vLib(arg),
+    mos: () => vChapter(arg), sec: () => vSec(arg), case: () => vCase(arg), rcw: () => vRcw(arg), scn: () => vScn(arg), oral: () => vOral(arg), me: vMe }[r] || vToday;
+  V();
+  setTab({ session: 'today', quick: 'today', deck: 'practice', scn: 'practice', oral: 'practice', mos: 'lib', sec: 'lib', case: 'lib', rcw: 'lib' }[r] || (TOP[r] ? r : 'today'));
+}
+
+/* ---------- Today ---------- */
+function vToday() {
+  setHead('Daily Study', false);
+  const t = today(), d = S.days[t] || { done: {}, n: 0 }, plan = todayPlan(), P = picks(t);
+  const left = plan.kind === 'daily' && plan.date === t && S.sess === plan ? plan.queue.length : plan.total;
+  const cardsDone = !!d.done.cards;
+  const dt = new Date(); const dstr = dt.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' });
+  const items = [
+    { k: 'cards', href: '#session', c: 'var(--accent)', t: cardsDone ? 'Cards done for today' : (S.sess && S.sess.date === t && S.sess.kind === 'daily' ? `Finish today's cards · ${left} left` : `Today's cards · ${plan.total}`), m: cardsDone ? `${d.n} reviewed` : `${plan.nDue} due · ${plan.nNew} new · mixed MOS, case law, RCW` },
+    { k: 'rcw', href: `#rcw/${P.rcw.cite}`, c: 'var(--p-rcw)', t: `RCW ${P.rcw.cite} — ${P.rcw.title}`, m: 'RCW of the day' },
+    { k: 'case', href: `#case/${P.case.id}`, c: 'var(--p-case)', t: P.case.name, m: `Case of the day · ${P.case.cite}` },
+    { k: 'mos', href: `#sec/${P.sec.num}`, c: 'var(--p-mos)', t: `${secLabel(P.sec)} — ${secShort(P.sec)}`, m: 'MOS section of the day · exact text' },
+    P.extra.k === 'scn' ? { k: 'extra', href: `#scn/${P.extra.o.id}`, c: 'var(--text-3)', t: P.extra.o.title, m: 'Optional · scenario' } : { k: 'extra', href: `#oral/${P.extra.o.id}`, c: 'var(--text-3)', t: P.extra.o.q, m: 'Optional · oral board question' },
+  ];
+  const nDone = items.filter(i => d.done[i.k]).length;
+  const s = streak();
+  render(`
+  <section class="card hero">
+    <div class="eyebrow">${esc(dstr)}</div>
+    <h1>${nDone >= 4 ? 'Nice work today.' : cardsDone ? 'Cards done. Keep reading.' : 'Today’s study'}</h1>
+    <div class="hero__nums"><div><b>${plan.total}</b><span>cards today</span></div><div><b>${nDone}/${items.length}</b><span>to-dos</span></div><div><b>${s}</b><span>day streak</span></div></div>
+    ${cardsDone ? `<a class="btn btn--block" href="#quick">Quick 5</a>` : `<a class="btn btn--primary btn--block" href="#session" id="startBtn">${S.sess && S.sess.date === t && S.sess.kind === 'daily' ? 'Continue' : 'Start'} · ${left} card${left === 1 ? '' : 's'}</a>`}
+  </section>
+  <div class="sec-t">Today’s to-do</div>
+  <div class="todo">${items.map(i => `<a class="todo__i ${d.done[i.k] ? 'is-done' : ''}" href="${i.href}" style="--c:${i.c}" data-k="${i.k}"><span class="todo__b"><span class="todo__t">${esc(i.t)}</span><span class="todo__m">${esc(i.m)}</span></span><span class="chk" aria-label="${d.done[i.k] ? 'Done' : 'Not done'}">${CHECK}</span></a>`).join('')}</div>
+  <div class="sec-t">Quick</div>
+  <div class="quick">
+    <a class="btn" href="#quick">⚡ Quick 5</a>
+    <a class="btn" href="#lib">🔎 Look something up</a>
+  </div>
+  <div class="sec-t">Resources</div>
+  <div class="list">
+    ${li('#mos/4', 'Ch. 4', 'Use of Force', `MOS · rev ${esc(D.mos[0].rev)}`, 'var(--p-mos)')}
+    ${li('#mos/46', 'Ch. 46', 'Critical Incidents & Special Ops', `MOS · rev ${esc(D.mos[2].rev)}`, 'var(--p-mos)')}
+    ${li('#lib/rcw', 'RCW', 'Important RCWs', `${D.rcw.length} sections · official text`, 'var(--p-rcw)')}
+    ${li('#lib/case', 'Cases', 'Case law', `${D.cases.length} federal + WA`, 'var(--p-case)')}
+  </div>`);
+}
+
+/* ---------- card sessions ---------- */
+let live = null;   // in-memory quick/deck session
+function deckIds(arg) {
+  const [p, m] = (arg || 'all:due').split(':');
+  let ids = D.cards.filter(c => p === 'all' || c.p === p).map(c => c.id);
+  if (m === 'due') { const due = ids.filter(id => isDue(id)); ids = due.length ? due : ids.filter(id => !st(id)).slice(0, 10); }
+  else if (m === 'new') ids = ids.filter(id => !st(id)).slice(0, 10);
+  else ids = ids.sort(() => Math.random() - .5).slice(0, 20);
+  return ids;
+}
+function vSession(kind, arg) {
+  let sess;
+  if (kind === 'daily') {
+    const t = today();
+    if (!(S.sess && S.sess.kind === 'daily' && S.sess.date === t)) { S.sess = todayPlan(); save(); }
+    sess = S.sess;
+  } else {
+    const key = kind + ':' + (arg || '');
+    if (!live || live.key !== key || (live.queue.length === 0 && live.fin)) live = null;
+    if (!live) { const q = kind === 'quick' ? quickIds() : deckIds(arg); live = { kind, key, queue: q, total: q.length, done: 0, ok: 0, miss: 0, again: [] }; }
+    sess = live;
+  }
+  const title = kind === 'daily' ? 'Today’s cards' : kind === 'quick' ? 'Quick 5' : 'Flashcards';
+  setHead(title, true);
+  if (!sess.queue.length) return vSessDone(kind, sess);
+  const id = sess.queue[0], c = IX.card.get(id); const s = st(id);
+  const pct = sess.total ? sess.done / sess.total * 100 : 0;
+  const ref = cardRefLink(c);
+  render(`
+   <div class="prog"><span class="xs mono faint">${sess.done}/${sess.total}${sess.again.length ? ` · +${sess.again.length} again` : ''}</span>${bar(pct)}</div>
+   <div class="fc-wrap"><div class="fc" id="fc" role="button" tabindex="0" aria-label="Flashcard. Tap to flip.">
+     <div class="fc__f"><div class="row">${ptag(c.p)}<span class="xs faint mono">${s ? 'Box ' + s.b : 'New'}</span></div><div class="fc__q">${esc(c.q)}</div><div class="xs faint">${esc(c.ref)}</div></div>
+     <div class="fc__f fc__f--b"><div class="row">${ptag(c.p)}<span class="xs faint">${esc(c.ref)}</span></div><div class="fc__a">${esc(c.a)}</div>${ref ? `<a class="btn btn--sm" style="align-self:flex-start" href="${ref}" data-noflip>Open source →</a>` : ''}</div>
+     <span class="fc-stamp fc-stamp--ok">GOT IT</span><span class="fc-stamp fc-stamp--miss">AGAIN</span>
+   </div></div>
+   <div class="fc__hint" id="hint">Tap to flip · swipe → got it · ← again</div>
+   <div class="grade"><button class="btn btn--miss" id="gMiss">✕ Again</button><button class="btn btn--ok" id="gOk">✓ Got it</button></div>`);
+  const fc = $('#fc');
+  const flip = () => { fc.classList.toggle('flip'); };
+  fc.addEventListener('click', e => { if (e.target.closest('[data-noflip]')) return; if (fc._sw) { fc._sw = 0; return; } flip(); });
+  fc.addEventListener('keydown', e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); flip(); } if (e.key === 'ArrowRight') next(true); if (e.key === 'ArrowLeft') next(false); });
+  const next = ok => {
+    grade(id, ok); sess.queue.shift(); sess.done++; ok ? sess.ok++ : sess.miss++;
+    if (!ok && !sess.again.includes(id)) { sess.again.push(id); sess.queue.push(id); sess.total++; }
+    if (kind === 'daily' && !sess.queue.length) dayRec().done.cards = 1;
+    save();
+    fc.style.transition = 'transform .25s ease, opacity .25s'; fc.style.opacity = '0'; fc.style.transform = `translateX(${ok ? 120 : -120}%) rotate(${ok ? 12 : -12}deg)`;
+    setTimeout(() => vSession(kind, arg), 180);
+  };
+  $('#gOk').onclick = () => next(true); $('#gMiss').onclick = () => next(false);
+  // swipe: touch events on phones (horizontal drags call preventDefault so the page doesn't scroll), pointer events for a mouse
+  let x0 = null, y0 = 0, dx = 0, horiz = null;
+  const so = $('.fc-stamp--ok', fc), sm = $('.fc-stamp--miss', fc);
+  const down = (x, y) => { x0 = x; y0 = y; dx = 0; horiz = null; fc.style.transition = 'none'; };
+  const move = (x, y, e) => {
+    if (x0 == null) return; dx = x - x0; const dy = y - y0;
+    if (horiz === null && (Math.abs(dx) > 8 || Math.abs(dy) > 8)) horiz = Math.abs(dx) > Math.abs(dy) * 1.2;
+    if (!horiz) return;
+    if (e && e.cancelable) e.preventDefault();
+    const f = fc.classList.contains('flip') ? ' rotateY(180deg)' : '';
+    fc.style.transform = `translateX(${dx}px) rotate(${dx / 22}deg)${f}`;
+    so.style.opacity = Math.max(0, Math.min(1, dx / 90)); sm.style.opacity = Math.max(0, Math.min(1, -dx / 90));
+  };
+  const end = () => {
+    if (x0 == null) return; x0 = null; fc.style.transition = '';
+    if (horiz && Math.abs(dx) > 90) { fc._sw = 1; next(dx > 0); return; }
+    if (horiz && Math.abs(dx) > 8) fc._sw = 1;
+    fc.style.transform = ''; so.style.opacity = 0; sm.style.opacity = 0;
+  };
+  fc.addEventListener('touchstart', e => { if (e.touches.length === 1) down(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
+  fc.addEventListener('touchmove', e => { if (e.touches.length === 1) move(e.touches[0].clientX, e.touches[0].clientY, e); }, { passive: false });
+  fc.addEventListener('touchend', end); fc.addEventListener('touchcancel', end);
+  fc.addEventListener('pointerdown', e => { if (e.pointerType === 'mouse') { down(e.clientX, e.clientY); try { fc.setPointerCapture(e.pointerId); } catch (_) {} } });
+  fc.addEventListener('pointermove', e => { if (e.pointerType === 'mouse') move(e.clientX, e.clientY, null); });
+  fc.addEventListener('pointerup', e => { if (e.pointerType === 'mouse') end(); });
+}
+function vSessDone(kind, sess) {
+  const d = dayRec();
+  if (kind === 'daily') { d.done.cards = 1; save(); }
+  sess.fin = true;
+  const acc = sess.done ? Math.round(sess.ok / sess.done * 100) : 0;
+  render(`<div class="card done-card"><div class="big">${sess.total ? '✅' : '🎯'}</div>
+    <h2 style="margin:12px 0 6px">${sess.total ? 'Done!' : 'Nothing due right now'}</h2>
+    <p class="muted">${sess.total ? `${sess.done} reviews · ${acc}% first-try` : 'You’re caught up. Try Quick 5 or browse the Library.'}</p>
+    <p class="muted small">🔥 ${streak()} day streak</p>
+    <div class="stack mt"><a class="btn btn--primary btn--block" href="#today">Back to Today</a><a class="btn btn--block" href="#quick" id="again5">Quick 5</a></div></div>`);
+  $('#again5').onclick = () => { live = null; };
+}
+
+/* ---------- Practice ---------- */
+function vPractice() {
+  setHead('Practice', false);
+  const cnt = p => { const ids = D.cards.filter(c => p === 'all' || c.p === p).map(c => c.id); return { all: ids.length, due: ids.filter(id => isDue(id)).length, fresh: ids.filter(id => !st(id)).length }; };
+  const row = (p, label, c) => { const k = cnt(p); return `<div class="card" style="padding:14px"><div class="row"><span class="dot" style="--c:${c}"></span><b>${label}</b><span class="spacer"></span><span class="xs faint mono">${k.due} due · ${k.fresh} new · ${k.all}</span></div>
+     <div class="row" style="margin-top:10px;gap:8px"><a class="btn btn--sm" href="#deck/${p}:due" data-deck>Due</a><a class="btn btn--sm" href="#deck/${p}:new" data-deck>New 10</a><a class="btn btn--sm" href="#deck/${p}:mix" data-deck>Shuffle 20</a></div></div>`; };
+  render(`
+   <div class="sec-t" style="margin-top:4px">Flashcards</div>
+   <div class="stack">${row('all', 'All pillars', 'var(--accent)')}${row('mos', 'MOS', 'var(--p-mos)')}${row('case', 'Case law', 'var(--p-case)')}${row('rcw', 'RCW', 'var(--p-rcw)')}</div>
+   <div class="sec-t">Scenarios · think it through, then reveal</div>
+   <div class="list">${D.scenarios.map(s => li(`#scn/${s.id}`, S.sc[s.id] ? '✓' : null, esc(s.title), esc(s.setting.slice(0, 120)) + '…')).join('')}</div>
+   <div class="sec-t">Oral board</div>
+   <div class="list">${D.oral.map(o => li(`#oral/${o.id}`, S.oral[o.id] ? '✓' : null, esc(o.q), esc(o.topic))).join('')}</div>`);
+  app.querySelectorAll('[data-deck]').forEach(a => a.addEventListener('click', () => { live = null; }));
+}
+function vScn(id) {
+  const s = IX.scn.get(id); if (!s) return vPractice();
+  setHead('Scenario', true);
+  const P = picks(); const isToday = P.extra.k === 'scn' && P.extra.o.id === id;
+  render(`<div class="stack">
+   <div class="card"><div class="eyebrow">Scenario</div><h2 style="font-size:20px;margin-bottom:8px">${esc(s.title)}</h2><p>${esc(s.setting)}</p>
+     <div class="sec-t" style="margin-top:12px">Decision points</div><ol class="scn-dp">${(s.decision_points || []).map(x => `<li>${esc(x)}</li>`).join('')}</ol></div>
+   <button class="btn btn--primary btn--block" id="rev">Reveal model answer</button>
+   <div id="ans" hidden class="stack">
+     <div class="card"><div class="eyebrow">Model answer</div><p style="white-space:pre-line">${esc(s.model_answer)}</p>
+     ${s.oral_board_hook ? `<div class="callout">${esc(s.oral_board_hook)}</div>` : ''}
+     <div class="sec-t">Sources</div><div class="xs muted">${(s.citations || []).map(esc).join(' · ')}</div></div>
+     <div class="card"><div class="eyebrow">How did you do?</div><div class="row" style="gap:8px">${['Missed key points', 'Mostly', 'Nailed it'].map((l, i) => `<button class="btn btn--sm" data-rate="${i + 1}" ${S.sc[id] && S.sc[id].rating === i + 1 ? 'style="border-color:var(--accent)"' : ''}>${l}</button>`).join('')}</div></div>
+   </div></div>`);
+  $('#rev').onclick = () => { $('#ans').hidden = false; $('#rev').hidden = true; };
+  app.querySelectorAll('[data-rate]').forEach(b => b.onclick = () => { S.sc[id] = { rating: +b.dataset.rate, at: today() }; dayRec(); if (isToday) dayRec().done.extra = 1; else dayRec().done.practice = 1; save(); toast('Saved'); location.hash = '#practice'; });
+}
+function vOral(id) {
+  const o = IX.oral.get(id); if (!o) return vPractice();
+  setHead('Oral board', true);
+  const P = picks(); const isToday = P.extra.k === 'oral' && P.extra.o.id === id;
+  render(`<div class="stack">
+   <div class="card"><div class="eyebrow">${esc(o.topic)}</div><h2 style="font-size:20px">${esc(o.q)}</h2>
+     <div class="timer" id="tm">2:00</div><div class="row" style="justify-content:center"><button class="btn btn--sm" id="tgo">Start 2-min answer</button></div></div>
+   <button class="btn btn--primary btn--block" id="rev">Show answer framework</button>
+   <div id="ans" hidden class="stack"><div class="card"><div class="eyebrow">Framework</div><p style="white-space:pre-line">${esc(o.framework)}</p>
+     ${o.fill && o.fill.length ? `<div class="sec-t">Fill in your own</div><ul class="pts">${o.fill.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}
+     ${o.hooks && o.hooks.length ? `<div class="sec-t">Policy hooks</div><div class="xs muted">${o.hooks.map(esc).join(' · ')}</div>` : ''}</div>
+     <button class="btn btn--block" id="odone">Mark practiced ✓</button></div></div>`);
+  let tmr = null, left = 120;
+  $('#tgo').onclick = () => { if (tmr) { clearInterval(tmr); tmr = null; $('#tgo').textContent = 'Resume'; return; } $('#tgo').textContent = 'Pause'; tmr = setInterval(() => { left = Math.max(0, left - 1); $('#tm').textContent = `${Math.floor(left / 60)}:${pad(left % 60)}`; if (!left) { clearInterval(tmr); tmr = null; $('#tgo').textContent = 'Time'; if (navigator.vibrate) navigator.vibrate(200); } }, 1000); };
+  window.addEventListener('hashchange', () => tmr && clearInterval(tmr), { once: true });
+  $('#rev').onclick = () => { $('#ans').hidden = false; $('#rev').hidden = true; };
+  $('#odone').onclick = () => { S.oral[id] = { at: today() }; if (isToday) dayRec().done.extra = 1; else dayRec().done.practice = 1; save(); toast('Saved'); location.hash = '#practice'; };
+}
+
+/* ---------- Library ---------- */
+function vLib(arg) {
+  if (arg && ['mos', 'case', 'rcw'].includes(arg)) { S.ui.lib = arg; save(); }
+  setHead('Library', false);
+  const tab = S.ui.lib;
+  render(`
+   <div class="search">${SEARCH}<input id="q" type="search" placeholder="Search MOS, cases, RCWs…" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="search" value="${esc(S.ui.q || '')}" aria-label="Search"></div>
+   <div id="res"></div>
+   <div id="browse">
+    <div class="seg" style="margin-top:12px" role="group" aria-label="Pillar">${['mos', 'case', 'rcw'].map(k => `<button aria-pressed="${k === tab}" data-seg="${k}">${k === 'mos' ? 'MOS' : k === 'case' ? 'Case law' : 'RCW'}</button>`).join('')}</div>
+    <div id="pane" class="mt" style="margin-top:12px"></div>
+   </div>`);
+  const pane = $('#pane');
+  const show = k => {
+    S.ui.lib = k; save();
+    app.querySelectorAll('[data-seg]').forEach(b => b.setAttribute('aria-pressed', b.dataset.seg === k));
+    if (k === 'mos') pane.innerHTML = `<div class="callout small" style="margin-bottom:10px">Exact text of FWPD Manual of Standards chapters as provided. Organized by section number; each section links to study points and cards.</div><div class="list">${D.mos.map(ch => li(`#mos/${ch.ch}`, 'Ch. ' + ch.ch, esc(ch.title), `${ch.sections.length} sections · rev ${esc(ch.rev)}`, 'var(--p-mos)')).join('')}</div>`;
+    if (k === 'case') pane.innerHTML = ['US', 'WA'].map(ct => `<div class="sec-t">${ct === 'US' ? 'U.S. Supreme Court' : 'Washington'}</div><div class="list">${D.cases.filter(c => c.court === ct).map(c => li(`#case/${c.id}`, null, esc(c.name), esc(c.cite) + ' · ' + esc(c.holding.slice(0, 90)) + '…', 'var(--p-case)')).join('')}</div>`).join('');
+    if (k === 'rcw') { const groups = [...new Set(D.rcw.map(r => r.group))]; pane.innerHTML = `<div class="callout small" style="margin-bottom:4px">Official text from app.leg.wa.gov (checked 2026-11-26), with a plain-English summary.</div>` + groups.map(g => `<div class="sec-t">${esc(g)}</div><div class="list">${D.rcw.filter(r => r.group === g).map(r => li(`#rcw/${r.cite}`, r.cite, esc(r.title), esc(r.summary.slice(0, 100)) + '…', 'var(--p-rcw)')).join('')}</div>`).join(''); }
+  };
+  app.querySelectorAll('[data-seg]').forEach(b => b.onclick = () => show(b.dataset.seg));
+  show(tab);
+  const q = $('#q'); let tm;
+  const run = () => { S.ui.q = q.value; const has = q.value.trim().length >= 2; $('#browse').hidden = has; $('#res').innerHTML = has ? searchHtml(q.value.trim()) : ''; };
+  q.addEventListener('input', () => { clearTimeout(tm); tm = setTimeout(run, 120); });
+  q.addEventListener('search', run);
+  if (q.value) run();
+}
+function searchHtml(q) {
+  const terms = q.toLowerCase().split(/\s+/).filter(Boolean);
+  const numQ = /^\d{1,2}(\.\d+)*$/.test(q) ? q : null;
+  const hit = s => { const l = s.toLowerCase(); return terms.every(t => l.includes(t)); };
+  const rx = new RegExp('(' + terms.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')', 'ig');
+  const hl = s => esc(s).replace(rx, '<mark>$1</mark>');
+  const snip = s => { const l = s.toLowerCase(); const i = Math.max(0, l.indexOf(terms[0]) - 50); return (i ? '…' : '') + s.slice(i, i + 150) + (s.length > i + 150 ? '…' : ''); };
+  const out = [];
+  const secs = [];
+  IX.secOrder.forEach(n => { const s = IX.sec.get(n); const body = s.paras.map(p => p[1]).join(' ');
+    if (numQ ? (n === numQ || n.startsWith(numQ + '.')) : hit(n + ' ' + s.title + ' ' + body)) secs.push(li(`#sec/${n}`, n === '4.0' ? 'Ch.4' : n, hl(secShort(s)), numQ ? esc(body.slice(0, 120)) : hl(snip(hit(s.title) ? body : body)), 'var(--p-mos)')); });
+  const cs = D.cases.filter(c => hit(c.name + ' ' + c.cite + ' ' + c.holding + ' ' + (c.swat || ''))).map(c => li(`#case/${c.id}`, null, hl(c.name), hl(snip(c.holding)), 'var(--p-case)'));
+  const rs = D.rcw.filter(r => (numQ && r.cite.startsWith(q)) || hit(r.cite + ' ' + r.title + ' ' + r.summary + ' ' + r.text.join(' '))).map(r => li(`#rcw/${r.cite}`, r.cite, hl(r.title), hl(snip(hit(r.summary) ? r.summary : r.text.join(' '))), 'var(--p-rcw)'));
+  if (rs.length) out.push(`<div class="sec-t">RCW · ${rs.length}</div><div class="list">${rs.slice(0, 30).join('')}</div>`);
+  if (cs.length) out.push(`<div class="sec-t">Case law · ${cs.length}</div><div class="list">${cs.slice(0, 30).join('')}</div>`);
+  if (secs.length) out.push(`<div class="sec-t">MOS · ${secs.length}</div><div class="list">${secs.slice(0, 40).join('')}</div>`);
+  return out.join('') || `<p class="faint" style="margin-top:16px">No matches for “${esc(q)}”.</p>`;
+}
+function vChapter(ch) {
+  const C = D.mos.find(c => c.ch === ch); if (!C) return vLib();
+  setHead(`MOS Ch. ${C.ch}`, true);
+  render(`<div class="src"><b>${esc(C.source)}</b></div>
+   <div class="sec-t">Sections</div>
+   <div class="list">${C.sections.map(s => li(`#sec/${s.num}`, s.num === '4.0' ? '—' : s.num, esc(secShort(s)) + (s.incomplete ? ' <span class="tag" style="--c:var(--warn)">incomplete</span>' : ''), S.read['sec:' + s.num] ? '✓ read' : '', 'var(--p-mos)')).join('')}</div>`);
+}
+function readBtn(key, dailyKey) {
+  const isRead = !!S.read[key];
+  return `<button class="btn btn--block ${isRead ? '' : 'btn--primary'}" id="markRead" data-key="${esc(key)}" data-daily="${dailyKey || ''}">${isRead ? '✓ Read · ' + esc(S.read[key]) : 'Mark as read'}</button>`;
+}
+function bindRead() { const b = $('#markRead'); if (!b) return; b.onclick = () => { S.read[b.dataset.key] = today(); dayRec(); if (b.dataset.daily) dayRec().done[b.dataset.daily] = 1; save(); b.classList.remove('btn--primary'); b.textContent = '✓ Read · ' + today(); toast(b.dataset.daily ? 'Checked off ✓' : 'Marked read'); }; }
+function drillBtn(ids) { return ids && ids.length ? `<a class="btn btn--block" href="#deck/ids:${ids.join(',')}" data-drill>Drill ${ids.length} card${ids.length > 1 ? 's' : ''}</a>` : ''; }
+function vSec(num) {
+  const s = IX.sec.get(num); if (!s) return vLib();
+  const C = IX.secCh.get(num); setHead(secLabel(s), true);
+  const P = picks(); const daily = P.sec.num === num ? 'mos' : '';
+  const i = IX.secOrder.indexOf(num), prev = IX.secOrder[i - 1], next = IX.secOrder[i + 1];
+  const pts = (s.pts || []).map(id => IX.pt.get(id)).filter(Boolean);
+  const cards = [...new Set((IX.cardsFor.sec.get(num) || []).concat(...pts.map(p => p.secs.flatMap(n => IX.cardsFor.sec.get(n) || []))))];
+  render(`<div class="stack">
+   <div><div class="eyebrow">FWPD MOS · Chapter ${esc(C.ch)} · ${esc(C.title)}</div><h2 style="font-size:21px">${s.num === '4.0' ? '' : esc(s.num) + ' '}${esc(secShort(s))}</h2></div>
+   <div class="src">Source: ${esc(C.source)}<br>Exact text as provided; page headers and footers removed.</div>
+   ${s.incomplete ? `<div class="callout callout--warn"><b>Incomplete in source.</b> ${esc(s.incomplete)}</div>` : ''}
+   <div class="card verb">${s.paras.map(p => `<p class="l${p[0]}">${esc(p[1])}</p>`).join('') || '<p class="faint">Heading only.</p>'}</div>
+   ${pts.length ? `<div class="sec-t">Study points</div>${pts.map(p => `<details class="acc" ${pts.length === 1 ? 'open' : ''}><summary>${esc(p.title)}<span class="xs faint mono" style="margin-left:6px">${esc(p.section)}</span></summary><div class="acc__b">
+       <p class="muted">${esc(p.summary)}</p>
+       ${p.rules.length ? `<div class="eyebrow" style="margin-top:8px">Key rules</div><ul class="pts">${p.rules.map(r => `<li>${esc(r)}</li>`).join('')}</ul>` : ''}
+       ${p.thresholds.length ? `<div class="eyebrow" style="margin-top:8px">Thresholds</div><ul class="pts">${p.thresholds.map(r => `<li>${esc(r)}</li>`).join('')}</ul>` : ''}
+       ${p.oral ? `<div class="eyebrow" style="margin-top:8px">Oral board</div><p>${esc(p.oral)}</p>` : ''}
+       ${p.swat ? `<div class="eyebrow" style="margin-top:8px">SWAT relevance</div><p>${esc(p.swat)}</p>` : ''}
+       ${p.flags.length ? `<div class="callout callout--warn">${p.flags.map(esc).join('<br>')}</div>` : ''}
+     </div></details>`).join('')}` : ''}
+   ${drillBtn(cards)}
+   ${readBtn('sec:' + num, daily)}
+   <div class="reader-nav">${prev ? `<a class="btn" href="#sec/${prev}">← ${prev === '4.0' ? 'Philosophy' : prev}</a>` : '<span></span>'}${next ? `<a class="btn" href="#sec/${next}">${next} →</a>` : '<span></span>'}</div>
+  </div>`);
+  bindRead(); app.querySelectorAll('[data-drill]').forEach(a => a.onclick = () => { live = null; });
+}
+function vCase(id) {
+  const c = IX.case.get(id); if (!c) return vLib();
+  setHead('Case law', true);
+  const P = picks(); const daily = P.case.id === id ? 'case' : '';
+  const cards = (IX.cardsFor.case.get(id) || []).concat(D.cards.filter(k => k.p === 'case' && !k.link && k.ref && c.name.split(/[ (+]/).some(w => w.length > 4 && k.ref.includes(w) && !['State', 'County', 'United', 'States'].includes(w))).map(k => k.id));
+  render(`<div class="stack">
+   <div><div class="row">${ptag('case')}<span class="tag" style="--c:var(--text-2)">${c.court === 'US' ? 'U.S. Supreme Court' : 'Washington'}</span></div><h2 style="font-size:21px;margin-top:8px">${esc(c.name)}</h2><div class="mono small muted">${esc(c.cite)}</div></div>
+   <div class="card"><div class="eyebrow">Holding</div><p>${esc(c.holding)}</p>
+     ${c.factors.length ? `<div class="eyebrow" style="margin-top:8px">Factors</div><ul class="pts">${c.factors.map(f => `<li>${esc(f)}</li>`).join('')}</ul>` : ''}
+     ${c.swat ? `<div class="eyebrow" style="margin-top:8px">Why it matters</div><p>${esc(c.swat)}</p>` : ''}</div>
+   ${c.quiz ? `<details class="acc"><summary>Quiz: ${esc(c.quiz)}</summary><div class="acc__b"><p>${esc(c.answer)}</p></div></details>` : ''}
+   <div class="src">${esc(c.verified)}</div>
+   ${c.src ? ext(c.src, 'Read the opinion') : ''}
+   ${drillBtn([...new Set(cards)])}
+   ${readBtn('case:' + id, daily)}
+  </div>`);
+  bindRead(); app.querySelectorAll('[data-drill]').forEach(a => a.onclick = () => { live = null; });
+}
+function vRcw(cite) {
+  const r = IX.rcw.get(cite); if (!r) return vLib();
+  setHead('RCW ' + r.cite, true);
+  const P = picks(); const daily = P.rcw.cite === cite ? 'rcw' : '';
+  render(`<div class="stack">
+   <div><div class="row">${ptag('rcw')}<span class="tag" style="--c:var(--text-2)">${esc(r.group)}</span></div><h2 style="font-size:21px;margin-top:8px">RCW ${esc(r.cite)}</h2><div class="muted">${esc(r.title)}</div></div>
+   <div class="card"><div class="eyebrow">In plain English</div><p>${esc(r.summary)}</p>
+     ${r.points.length ? `<ul class="pts">${r.points.map(p => `<li>${esc(p)}</li>`).join('')}</ul>` : ''}
+     <div class="eyebrow" style="margin-top:10px">Key language</div><div class="quote p-rcw">“${esc(r.quote)}”</div></div>
+   <details class="acc"><summary>Official text</summary><div class="acc__b verb">${r.text.map(l => `<p>${esc(l)}</p>`).join('')}<p class="xs faint mono">${esc(r.history)}</p></div></details>
+   <div class="src">${esc(r.verified)}. Summary is a study aid, not the law; the official text controls.</div>
+   ${ext(r.url, 'Open on app.leg.wa.gov')}
+   ${drillBtn(IX.cardsFor.rcw.get(cite))}
+   ${readBtn('rcw:' + cite, daily)}
+  </div>`);
+  bindRead(); app.querySelectorAll('[data-drill]').forEach(a => a.onclick = () => { live = null; });
+}
+
+/* ---------- Progress ---------- */
+function vMe() {
+  setHead('Progress', false);
+  const t = today();
+  const days = Array.from({ length: 14 }, (_, i) => addDays(t, i - 13));
+  const pil = ['mos', 'case', 'rcw'].map(p => { const ids = D.cards.filter(c => c.p === p).map(c => c.id); const seen = ids.filter(id => st(id)); const m = ids.filter(id => st(id) && st(id).b >= 4); return { p, n: ids.length, seen: seen.length, m: m.length, due: ids.filter(id => isDue(id)).length }; });
+  const readN = k => Object.keys(S.read).filter(x => x.startsWith(k + ':')).length;
+  const tot = Object.values(S.days).reduce((a, d) => a + (d.n || 0), 0);
+  render(`
+   <div class="card"><div class="row"><div><div class="eyebrow">Streak</div><div style="font:700 30px/1 var(--mono)">🔥 ${streak()}</div></div><span class="spacer"></span><div style="text-align:right"><div class="eyebrow">Total reviews</div><div style="font:700 22px/1 var(--mono)">${tot}</div></div></div>
+    <div class="days" style="margin-top:14px">${days.map(d => `<i class="${studiedOn(d) ? (S.days[d].done && S.days[d].done.cards ? 'on' : 'part') : ''} ${d === t ? 'today' : ''}" title="${d}"></i>`).join('')}</div><div class="xs faint" style="margin-top:6px">Last 14 days · green = cards done</div></div>
+   <div class="sec-t">Cards by pillar · mastered = box 4+</div>
+   <div class="card stack">${pil.map(x => `<div><div class="row"><span class="dot" style="--c:var(--p-${x.p})"></span><b>${PILLAR[x.p]}</b><span class="spacer"></span><span class="xs mono faint">${x.m} mastered · ${x.seen}/${x.n} seen · ${x.due} due</span></div><div style="margin-top:6px">${bar(x.n ? x.seen / x.n * 100 : 0, `var(--p-${x.p})`)}</div></div>`).join('')}</div>
+   <div class="sec-t">Reading</div>
+   <div class="card kv"><span>MOS sections read</span><span>${readN('sec')}/${IX.secOrder.length}</span><span>Cases read</span><span>${readN('case')}/${D.cases.length}</span><span>RCWs read</span><span>${readN('rcw')}/${D.rcw.length}</span><span>Scenarios done</span><span>${Object.keys(S.sc).length}/${D.scenarios.length}</span><span>Oral questions practiced</span><span>${Object.keys(S.oral).length}/${D.oral.length}</span></div>
+   <div class="sec-t">Settings</div>
+   <div class="card stack">
+     <label class="row"><span>New cards per day</span><span class="spacer"></span><select id="npd" class="btn btn--sm" style="font-size:16px">${[3, 6, 9, 12].map(n => `<option ${n === S.set.newPerDay ? 'selected' : ''}>${n}</option>`).join('')}</select></label>
+     <div class="row" style="gap:8px"><button class="btn btn--sm" id="exp">Export progress</button><label class="btn btn--sm">Import<input id="imp" type="file" accept="application/json" hidden></label><span class="spacer"></span><button class="btn btn--sm" id="rst" style="color:#ffb3aa">Reset</button></div>
+     <p class="xs faint" style="margin:0">Progress is saved only on this device (no account). On iPhone, the Home Screen app keeps its own copy, separate from Safari.</p>
+   </div>
+   <div class="sec-t">Notes & gaps</div>
+   ${D.flags.map(f => `<details class="acc"><summary><span class="tag" style="--c:${f.sev === 'high' ? 'var(--danger)' : f.sev === 'medium' ? 'var(--warn)' : 'var(--text-3)'}">${esc(f.sev)}</span><span style="font-weight:600;font-size:14px">${esc(f.item.slice(0, 70))}…</span></summary><div class="acc__b"><p>${esc(f.item)}</p>${f.rec ? `<p class="muted">${esc(f.rec)}</p>` : ''}</div></details>`).join('')}
+   <div class="sec-t">About</div>
+   <div class="card small muted"><p>${esc(D.meta.note)}</p><p style="margin:0">Data built ${esc(D.meta.built)} · v${esc(window.DATA_VER)} · <a href="../">Open SWAT Prep</a></p></div>`);
+  $('#npd').onchange = e => { S.set.newPerDay = +e.target.value; if (S.sess && S.sess.date === t && !S.sess.done) S.sess = null; save(); toast('Saved'); };
+  $('#exp').onclick = () => { const b = new Blob([JSON.stringify(S, null, 1)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `daily-study-progress-${t}.json`; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); };
+  $('#imp').onchange = e => { const f = e.target.files[0]; if (!f) return; f.text().then(txt => { const o = JSON.parse(txt); if (!o || o.v !== 1 || typeof o.fc !== 'object') throw 0; S = Object.assign(blank(), o); save(); toast('Imported'); vMe(); }).catch(() => toast('That file isn’t a Daily Study export')); };
+  $('#rst').onclick = () => { if (confirm('Reset all Daily Study progress on this device?')) { S = blank(); save(); live = null; toast('Reset'); vMe(); } };
+}
+
+/* deck by explicit ids (from "Drill N cards") */
+const _deckIds = deckIds;
+deckIds = function (arg) { if (arg && arg.startsWith('ids:')) return arg.slice(4).split(',').filter(id => IX.card.has(id)); return _deckIds(arg); };
+
+/* ---------- boot ---------- */
+function load() {
+  return fetch('data.json?v=' + encodeURIComponent(window.DATA_VER)).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); });
+}
+load().then(d => { D = d; index(); route(); }).catch(() => {
+  app.innerHTML = `<div class="card" style="margin-top:20px"><h2>Couldn’t load study data</h2><p class="muted">Connect to the internet once so the app can save everything for offline use, then reopen.</p><button class="btn btn--primary" onclick="location.reload()">Try again</button></div>`;
+});
+document.addEventListener('visibilitychange', () => { if (!document.hidden && D && (location.hash === '' || location.hash === '#today')) route(); });
+if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js', { scope: './' }).catch(() => {}));
+}
+window.__ds = { get S() { return S; }, get D() { return D; }, today, streak };
+})();

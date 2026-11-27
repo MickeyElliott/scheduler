@@ -39,9 +39,25 @@ def meals(pad=0.0):
     d.pieslice([kx-S*.045, top, kx+S*.045, top+S*.26], 270, 90, fill=(225, 240, 232))
     return im
 
+def study(pad=0.0):
+    im = bg((16, 24, 38), (8, 10, 16)); glow(im, (S*.5, S*.44), 380, (96, 165, 250), 60); d = ImageDraw.Draw(im)
+    c = S/2; blue = (96, 165, 250); ink = (228, 238, 252); w = int(S*.026); k = 1 - pad*1.6
+    bw, bh = S*.31*k, S*.40*k; top = c - bh*.5                                   # open book
+    for sgn in (-1, 1):
+        x0 = c + sgn*S*.012
+        pts = [(x0, top), (x0+sgn*bw, top-S*.03*k), (x0+sgn*bw, top+bh-S*.03*k), (x0, top+bh)]
+        d.polygon(pts, outline=ink, width=w)
+        for i in range(1, 4):
+            y = top + bh*i/4.6 + S*.02*k
+            d.line([(x0+sgn*S*.05*k, y), (x0+sgn*(bw-S*.05*k), y-S*.022*k)], fill=blue, width=int(w*.7))
+    return im
+
 def save(fn, im, size): im.resize((size, size), Image.LANCZOS).save(os.path.join(OUT, fn), optimize=True)
 os.makedirs(OUT, exist_ok=True)
-for name, fn in [('app', tracker), ('meals', meals)]:
+import sys
+ONLY = sys.argv[1:]
+for name, fn in [('app', tracker), ('meals', meals), ('study', study)]:
+    if ONLY and name not in ONLY: continue
     a, m = fn(), fn(pad=.16)   # maskable keeps art inside the 80% safe zone
     save(f'{name}-180.png', a, 180); save(f'{name}-192.png', a, 192); save(f'{name}-512.png', a, 512)
     save(f'{name}-maskable-512.png', m, 512); save(f'{name}-32.png', a, 32)

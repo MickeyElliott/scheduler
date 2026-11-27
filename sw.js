@@ -17,6 +17,7 @@ self.addEventListener('fetch', e => {
   const req = e.request; if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.origin === location.origin) {
+    if (url.pathname.includes('/study/')) return;   /* the Daily Study app has its own service worker */
     if (req.mode === 'navigate' || /\.(html|js|webmanifest)$/.test(url.pathname) || url.pathname.endsWith('/')) {
       const key = url.origin + url.pathname;   /* one entry per file: no ?query or #hash variants */
       e.respondWith(fetch(req).then(res => { if (res.ok && res.type === 'basic') { const copy = res.clone(); caches.open(VERSION).then(c => c.put(key, copy)); } return res; })

@@ -128,6 +128,7 @@ for (const dev of devices.filter(d => !process.env.DEV || d.key === process.env.
   // sync popover: email only
   await b.go('index.html?nosw#view=study');
   for (let i = 0; i < 40 && (await b.ev(`document.querySelector('#syncHost .sync').dataset.mode`)) !== 'signedout'; i++) await sleep(250);
+  ok(`${P}: Study tab links to the Daily Study app (signed out)`, await b.ev(`(()=>{const a=document.querySelector('a[data-dslink]');if(!a)return false;const r=a.getBoundingClientRect();return new URL(a.href).pathname.endsWith('/study/')&&r.height>=44&&r.right<=innerWidth})()`));
   await b.tap('#syncHost .sync__pill');
   ok(`${P}: sign-in popover is email-only (no code, no password)`, await b.ev(`!!document.querySelector('.sync__pop input[type=email]')&&!document.querySelector('.sync__pop input[name=code],.sync__pop input[type=password]')`));
   const pop = await b.ev(`(()=>{const r=document.querySelector('.sync__pop').getBoundingClientRect();return {l:r.left,r:r.right,t:r.top,vw:innerWidth}})()`);

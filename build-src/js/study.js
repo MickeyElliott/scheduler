@@ -222,6 +222,7 @@ function renderStudy(){const tab=stTab();S.ui.studyTab=tab;
   const tabs=STUDY_TABS.map(([k,l])=>({key:k,html:esc(l)+(k==='cards'&&st&&st.due.length?`<span class="tab__meta">${st.due.length}</span>`:'')}));
   $('#main').innerHTML=`<section class="view sx"><div class="page-head"><div><div class="eyebrow">${STUDY?`Policy · flashcards · scenarios · oral board`:'Private study materials'}</div><h1>Study</h1></div>
     <div class="row">${STUDY?`<span class="faint small sx-offline" title="Saved on this device ${esc((STUDY.at||'').slice(0,10))}">● Saved for offline</span>`:''}<button class="btn sx-q5btn" data-quick5 ${STUDY?'':'disabled'}>⚡ Patrol quick 5</button></div></div>
+    <a class="ds-link" href="study/" data-dslink><span class="ds-link__i" aria-hidden="true">📘</span><span class="ds-link__b"><b>Daily Study app</b><span>Daily MOS, case law and RCW drills. Exact MOS text, no login. Add it to your Home Screen.</span></span><span class="ds-link__go" aria-hidden="true">→</span></a>
     <div class="mb-5 sx-tabsrow">${tabsHtml('study',tabs,STUDY_MORE.some(t=>t[0]===tab)?'more':tab,{label:'Study sections'})}</div>
     <div class="sx-body" key="${tab}">${STUDY?SXB[tab]():studyGate()}</div></section>`;
   bindTabs($('#main'),(id,k)=>{clearTimeout(scrollT);
